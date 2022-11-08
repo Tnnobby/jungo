@@ -10,5 +10,8 @@ npm-debug.*
 *.orig.*
 web-build/
 
+# Reworked Components
+*.old.*
+
 # macOS
 .DS_Store

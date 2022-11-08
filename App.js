@@ -1,20 +1,56 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { Dimensions, LogBox, StyleSheet, View } from "react-native";
+import { Provider } from "react-redux";
+import useFonts from "./js/hooks/useFonts";
+import store from "./redux/store";
+import Router from "./Router";
+import * as Device from "expo-device";
+import 'react-native-get-random-values';
+// import { decode, encode } from "base-64";
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+// if (!global.btoa) {
+//   global.btoa = encode;
+// }
+
+// if (!global.atob) {
+//   global.atob = decode;
+// }
+
+const Constants = {
+  STATUS_BAR: Device.osName === "iOS" ? 44 : 24,
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    top: Constants.STATUS_BAR,
+    backgroundColor: "#fff",
+    position: "relative",
+    overflow: "hidden",
+    height: Dimensions.get('window').height - Constants.STATUS_BAR
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // backgroundColor: 'red'
   },
 });
+
+export default function App() {
+  const fontsLoaded = useFonts();
+
+  return (
+    <Provider store={store}>
+      {fontsLoaded && (
+        <View
+          style={{
+            ...styles.container,
+            height:
+              Device.osName === "iOS"
+                ? Dimensions.get("window").height - 66
+                : Dimensions.get("window").height,
+            width: Dimensions.get("window").width,
+          }}
+        >
+          <Router />
+        </View>
+      )}
+    </Provider>
+  );
+}
