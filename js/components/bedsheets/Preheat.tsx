@@ -115,7 +115,6 @@ export interface PreheatProps extends React.FC {
   children?: React.ReactNode;
   close?: () => void;
   cancel?: () => void;
-  set?: () => void;
   initialValue?: any
   onChange?: (value: any) => void
 }
@@ -123,7 +122,6 @@ export interface PreheatProps extends React.FC {
 export default function Preheat({
   close,
   cancel,
-  set,
   initialValue = 0,
   onChange,
   ...props

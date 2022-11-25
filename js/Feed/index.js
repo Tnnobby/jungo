@@ -93,7 +93,6 @@ export default function FeedPage({ ...props }) {
         profilePic={true}
         searchButton={true}
         onSearchPress={openSearch}
-        // notificationButton={true}
         headerText="Home"
       />
       <ScrollView

@@ -10,23 +10,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   }
 })
-export default function Timer ({setValue, close, initialValue, ...props}) {
-  console.log(initialValue);
+export default function Timer ({onChange, close, cancel, initialValue, ...props}) {
   const [date, setDate] = useState(new Date(new Date().setHours(initialValue.hours, initialValue.minutes)));
-  console.log(date);
   
   const changeHandle = (ev, d) => {
     setDate(d);
+    onChange({
+      hours: d.getHours(),
+      minutes: d.getMinutes()
+    })
   }
 
-  const doneHandle = () => {
-    setValue({
-      hours: date.getHours(),
-      minutes: date.getMinutes()
-    });
-    close();
-  }
-  const cancelHandle = () => close()
+  const doneHandle = () => close()
+  const cancelHandle = () => cancel()
 
   return (
     <View style={styles.body}>

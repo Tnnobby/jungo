@@ -98,8 +98,6 @@ export default function AddRecipe(props) {
 
   const backHandler = () => setPage(page - 1);
 
-  console.log("Window:", Dimensions.get("window"));
-
   return (
     <Page {...props}>
       <Pressable

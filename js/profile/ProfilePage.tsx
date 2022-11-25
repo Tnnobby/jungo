@@ -6,7 +6,7 @@ import FloatingAddButton from "../components/AddButton";
 import Page from "../Page";
 import { Header } from "../components/header";
 import { useNavigation } from "../hooks/useNavigation";
-import { useSelector } from "react-redux";
+import { UserDoc } from "../context-providers/FirebaseProvider";
 
 const TEST_DATA = {
   user_id: 1,
@@ -36,31 +36,39 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Profile(props) {
+interface ProfilePageProps {
+  data: UserDoc
+}
+
+const ProfilePage = ({ data, ...props }: ProfilePageProps) => {
   // const [fontsLoaded] = useFonts({
   //   NotoSans:Rubik_400Regular,
   //   NotoSans_Bold:Rubik_700Bold
   // })
   const { toPage } = useNavigation();
-  
 
   const onAddNewHandle = () => {
     toPage({
-      toRoute: 'add_recipe',
-    })
-  };
-
-  const rearrangeableHandle = () => {
-    console.log("close pressed");
+      toRoute: "add_recipe",
+    });
   };
 
   return (
-    <Page id="profile" keyboardSafe={false} {...props}>
+    <Page
+      onAnimationEnd={undefined}
+      _onTransitionEnd={undefined}
+      useAnimatedProps={undefined}
+      transitionOptions={undefined}
+      id="profile"
+      keyboardSafe={false}
+      {...props}
+    >
       <View style={styles.container}>
         <Header
           backButton={true}
           closeButton={true}
-          onClosePress={rearrangeableHandle}
+          onBackPress={undefined}
+          onClosePress={undefined}
         />
         <ScrollView
           style={{
@@ -69,7 +77,7 @@ export default function Profile(props) {
           }}
           showsVerticalScrollIndicator={false}
         >
-          <ProfileHeader {...TEST_DATA} />
+          <ProfileHeader firstName={data.first_name} lastName={data.last_name} />
           <View style={styles.tabContainer}>
             <ProfileTabHeader />
           </View>
@@ -79,4 +87,6 @@ export default function Profile(props) {
       </View>
     </Page>
   );
-}
+};
+
+export default ProfilePage;

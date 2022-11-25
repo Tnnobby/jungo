@@ -63,17 +63,14 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function ProfileHeader(props) {
-  const [following, setFollowing] = useState(props.following);
-  const [notifications, setNotifications] = useState(props.notifications);
-  const { first_name, last_name } = useSelector(state => state.user)
+export default function ProfileHeader({profilePicUrl = "", bio = "", firstName, lastName}) {
+  const [following, setFollowing] = useState(0); // <- Need following in userDoc
+  const [notifications, setNotifications] = useState(0); // <- Need notifications in userDoc
 
-  const onFollowPress = () => {
-    setFollowing(!following);
-  };
-  const onNotificationPress = () => {
-    setNotifications(!notifications);
-  }
+  const onFollowPress = () => setFollowing(!following)
+  
+  const onNotificationPress = () => setNotifications(!notifications)
+
 
   return (
     <View style={styles.columnHead}>
@@ -82,24 +79,22 @@ export default function ProfileHeader(props) {
           <Image
             style={styles.profilePic}
             source={{
-              uri: props.profile_pic_url,
+              uri: profilePicUrl,
             }}
           />
         </View>
         <View style={styles.rightContainer}>
           <View style={styles.rightUpper}>
-            <Text style={styles.username}>{`${first_name} ${last_name}`}</Text>
-
-            <Text style={styles.bio}>{props.user_bio}</Text>
+            <Text style={styles.username}>{`${firstName} ${lastName}`}</Text>
+            <Text style={styles.bio}>{bio}</Text>
           </View>
-
           <View style={styles.actionContainer}>
             <View style={styles.detailContainer}>
               <Text style={styles.detailText}>
-                {`${props.followers_count} Followers`}
+                {`100 Followers`}
               </Text>
               <Text style={styles.detailText}>
-                {`${props.recipes_count} Recipes`}
+                {`36 Recipes`}
               </Text>
             </View>
             <View style={styles.buttonContainer}>

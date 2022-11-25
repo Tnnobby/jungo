@@ -1,18 +1,20 @@
-import { View, StyleSheet, Text, Animated } from "react-native";
+import { View, StyleSheet, Text, Animated, Pressable } from "react-native";
+import { useNavigation } from "../../hooks/useNavigation";
 import NotificationBell from "../../svg/jsx/NotificationBell";
 import SearchIcon from "../../svg/jsx/Search";
 import { CircleButton } from "../buttons";
 import ProfilePic from "../ProfilePic";
+import { TransitionBuilder } from "../TransitionManager/transition";
 
 const styles = StyleSheet.create({
   main: {
     height: 70,
     flexDirection: "row",
-    backgroundColor: 'white',
+    backgroundColor: "white",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    borderColor: 'transparent'
+    borderColor: "transparent",
   },
   searchCont: {
     height: 21,
@@ -24,12 +26,12 @@ const styles = StyleSheet.create({
   },
   endGroup: {
     flexDirection: "row",
-    backgroundColor: 'white'
+    backgroundColor: "white",
   },
   frontGroup: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: 'white'
+    backgroundColor: "white",
   },
   headerText: {
     fontFamily: "Rubik_500",
@@ -42,16 +44,28 @@ export default function LargeHeader({
   style,
   headerText,
   profilePic,
+  onProfilePicPress,
   searchButton,
   onSearchPress = () => {},
   onNotificationPress = () => {},
   notificationButton,
   ...props
 }) {
+  const { toPage } = useNavigation()
+
+  const picPressHandle = () => {
+    toPage({
+      toRoute: 'profile',
+      options: TransitionBuilder.getDefaultBack()
+    })
+  }
+
   return (
     <Animated.View style={[style, styles.main]}>
       <View style={styles.frontGroup}>
-        {profilePic && <ProfilePic />}
+        {profilePic && (
+            <ProfilePic onPress={onProfilePicPress || picPressHandle}/>
+        )}
         {headerText && <Text style={styles.headerText}>{headerText}</Text>}
       </View>
       <View style={styles.endGroup}>

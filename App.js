@@ -4,7 +4,9 @@ import useFonts from "./js/hooks/useFonts";
 import store from "./redux/store";
 import Router from "./Router";
 import * as Device from "expo-device";
-import 'react-native-get-random-values';
+import "react-native-get-random-values";
+import FirebaseWrapper from "./js/context-providers/FirebaseProvider";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 // import { decode, encode } from "base-64";
 
 // if (!global.btoa) {
@@ -25,7 +27,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     position: "relative",
     overflow: "hidden",
-    height: Dimensions.get('window').height - Constants.STATUS_BAR
+    height: Dimensions.get("window").height - Constants.STATUS_BAR,
     // alignItems: 'center',
     // justifyContent: 'center',
     // backgroundColor: 'red'
@@ -36,21 +38,25 @@ export default function App() {
   const fontsLoaded = useFonts();
 
   return (
-    <Provider store={store}>
-      {fontsLoaded && (
-        <View
-          style={{
-            ...styles.container,
-            height:
-              Device.osName === "iOS"
-                ? Dimensions.get("window").height - 66
-                : Dimensions.get("window").height,
-            width: Dimensions.get("window").width,
-          }}
-        >
-          <Router />
-        </View>
-      )}
-    </Provider>
+    <GestureHandlerRootView>
+      <Provider store={store}>
+        {fontsLoaded && (
+          <FirebaseWrapper>
+            <View
+              style={{
+                ...styles.container,
+                height:
+                  Device.osName === "iOS"
+                    ? Dimensions.get("window").height - 66
+                    : Dimensions.get("window").height,
+                width: Dimensions.get("window").width,
+              }}
+            >
+              <Router />
+            </View>
+          </FirebaseWrapper>
+        )}
+      </Provider>
+    </GestureHandlerRootView>
   );
 }

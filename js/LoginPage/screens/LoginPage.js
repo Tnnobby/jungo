@@ -17,7 +17,6 @@ export default function LoginMainPage({ ...props }) {
   const onSubmit = ({ email, password }) => {
     openLoading()
     Keyboard.dismiss()
-    console.log(email)
     loginUser({
       method: "email",
       email,
@@ -38,10 +37,10 @@ export default function LoginMainPage({ ...props }) {
             error({key: e.code, message: 'No Email'})
             break;
           case "auth/invalid-email":
-            console.error("Invalid Email");
+            error({key: e.code, message: 'Invalid Email'})
             break;
           case "auth/wrong-password":
-            console.error("Invalid Password");
+            error({key: e.code, message: 'Incorrect Email or Password'})
             break;
           default:
             console.error(error);

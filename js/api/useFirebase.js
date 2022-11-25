@@ -1,10 +1,8 @@
-import { initializeApp } from "firebase/app";
 import {
   addDoc,
   collection,
   endAt,
   getDocs,
-  getFirestore,
   limit,
   orderBy,
   query,
@@ -12,17 +10,14 @@ import {
   startAt,
   Timestamp,
 } from "firebase/firestore";
-import { getStorage, ref, uploadBytes } from "firebase/storage";
-import { useRef } from "react";
-import firebaseConfig from "../../firebase.config";
+import { ref, uploadBytes } from "firebase/storage";
 import { v1 } from "uuid";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { FirebaseContext } from "../context-providers/FirebaseProvider";
 
 export default function useFirebase() {
   const [recipes, setRecipes] = useState([]);
-  const app = useRef(initializeApp(firebaseConfig)).current;
-  const db = useRef(getFirestore(app)).current;
-  const storage = useRef(getStorage(app)).current;
+  const { storage, db } = useContext(FirebaseContext)
 
   const addRecipe = async (data) => {
     const id = v1();

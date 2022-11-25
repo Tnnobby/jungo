@@ -1,25 +1,26 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useNavigation } from './useNavigation'
 
 export default function useCamera () {
-  const [pictures, setPictures] = useState<any[]>([])
+  const pictures = useRef<any[]>([])
   const { openCamera } = useNavigation()
 
   const addPicture = (picture: any) => {
-    setPictures([
-      ...pictures,
+    pictures.current = [
+      ...pictures.current,
       picture
-    ])
+    ]
   }
 
   const clearPictures = () => {
-    setPictures([])
+    pictures.current = []
   }
 
-  const open = () => {
+  const open = (props?: any) => {
     clearPictures()
     openCamera({
-      addPicture
+      addPicture,
+      ...props
     })
   }
 

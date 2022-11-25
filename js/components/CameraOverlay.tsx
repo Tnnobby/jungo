@@ -182,6 +182,7 @@ export default function CameraOverlay({ close, addPicture, ...props }: {
 
   const confirmHandle = () => {
     addPicture(tempPhoto)
+    close()
   }
   const retakeHandle = () => {
     setTempPhoto(null)

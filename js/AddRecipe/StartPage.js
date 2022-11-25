@@ -11,13 +11,13 @@ import {
   View,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { launchCamera } from "../../redux/reducers/cameraReducer";
 import {
   setNewRecipeField,
   setRecipeTitle,
 } from "../../redux/reducers/newRecipeReducer";
 import NutritionDetails from "../components/bedsheets/NutritionDetails";
 import Preheat from "../components/bedsheets/Preheat";
+import Timer from "../components/bedsheets/Timer";
 import GeneralStyles from "../components/GeneralStyles";
 import constants from "../constants";
 import useCamera from "../hooks/useCamera";
@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     flexDirection: "row",
+    right: 20,
     justifyContent: "flex-end",
     width: "100%",
   },
@@ -196,17 +197,22 @@ export default function StartPage({
     };
   }, []);
 
-  useEffect(() => {
-    if (cameraState === "idle" && cameraOpen) {
-      cameraPhotos.length > 0 &&
-        dispatch(setNewRecipeField({ photo: cameraPhotos }));
-      setCameraOpen(false);
-    }
-  }, [cameraState]);
+  // useEffect(() => {
+  //   if (cameraState === "idle" && cameraOpen) {
+  //     cameraPhotos.length > 0 &&
+  //       dispatch(setNewRecipeField({ photo: cameraPhotos }));
+  //     setCameraOpen(false);
+  //   }
+  // }, [cameraState]);
 
   const cameraPress = () => {
     setCameraOpen(true);
-    camera.open()
+    camera.open({
+      onClose: () => {
+        setCameraOpen(false)
+        setPhoto()
+      }
+    })
   };
   const cameraPressIn = () => setCameraPressing(true);
   const cameraPressOut = () => setCameraPressing(false);
@@ -218,10 +224,26 @@ export default function StartPage({
       onClose: () => setValue("preheat"),
     });
 
-  const cookTimeActionTrigger = () =>
-    openOverlay({ overlay: "timer", id: "cooktime", value: cooktime });
-  const prepTimeActionTrigger = () =>
-    openOverlay({ overlay: "timer", id: "preptime", value: preptime });
+  const cookTimeActionTrigger = () => {
+    setBedsheet({
+      element: <Timer />,
+      initialValue: cooktime,
+      onClose: () => setValue('cooktime')
+    })
+  }
+
+  // const cookTimeActionTrigger = () =>
+  //   openOverlay({ overlay: "timer", id: "cooktime", value: cooktime });
+  const prepTimeActionTrigger = () => {
+    setBedsheet({
+      element: <Timer />,
+      initialValue: preptime,
+      onClose: () => setValue('preptime')
+    })
+  }
+
+  // const prepTimeActionTrigger = () =>
+  //   openOverlay({ overlay: "timer", id: "preptime", value: preptime });
 
   const caloriesActionTrigger = () =>
     setBedsheet({
@@ -234,12 +256,10 @@ export default function StartPage({
     console.log("setting value to:", valueRef.current);
     dispatch(setNewRecipeField({ [field]: valueRef.current }));
   };
-
-  const openOverlay = (overlay) => {
-    setActiveBedsheet(overlay.id);
-    // console.log(overlay);
-    dispatch(setBedsheet(overlay));
-  };
+  const setPhoto = () => {
+    console.log("setting photo to:", camera.pictures.current)
+    dispatch(setNewRecipeField({photo: camera.pictures.current}))
+  }
 
   const descriptionPressHandle = () => descriptionRef.current.focus();
 

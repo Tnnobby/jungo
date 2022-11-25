@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 export default function ProfilePic ({...props}) {
 
   return (
-    <StatefulPressable style={styles.main}>
+    <StatefulPressable style={styles.main} {...props}>
       <Image 
         source={{
           uri: defaultPic,

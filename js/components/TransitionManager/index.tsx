@@ -1,4 +1,5 @@
-import React, { useState, createContext } from "react";
+import { useState, createContext, useContext, useEffect, cloneElement } from "react";
+import { FirebaseContext } from "../../context-providers/FirebaseProvider";
 import Bedsheet from "../Bedsheet";
 import CameraOverlay from "../CameraOverlay";
 import { ErrorHandler } from "../ErrorHandler";
@@ -71,7 +72,7 @@ const TransitionManager = ({
   initialData: any;
 }) => {
   const [stack, setStack] = useState<Stack>([
-    React.cloneElement(routes[initial], { ...initialData }),
+    cloneElement(routes[initial], { ...initialData }),
   ]);
   const [loading, setLoading] = useState<{ open: boolean; displayed: boolean }>(
     { open: false, displayed: false }
@@ -84,6 +85,13 @@ const TransitionManager = ({
     open: false,
     tools: null,
   });
+  const { user } = useContext(FirebaseContext)
+
+  useEffect(() => {
+    if (!user) {
+      routes['login_splash']
+    }
+  }, [user])
 
   /* Actions */
   const openLoading = () => setLoading({ open: true, displayed: true });
@@ -106,13 +114,13 @@ const TransitionManager = ({
       const outEl = _stack.pop();
       let inEl: JSX.Element;
       if (toRoute) {
-        inEl = React.cloneElement(routes[toRoute], {
+        inEl = cloneElement(routes[toRoute], {
           transitionOptions: settings.in,
           data,
           zIndex: 2,
         });
       } else if (toElement) {
-        inEl = React.cloneElement(toElement, {
+        inEl = cloneElement(toElement, {
           transitionOptions: settings.in,
           data,
           zIndex: 2,
@@ -121,14 +129,14 @@ const TransitionManager = ({
       return !resetStack
         ? [
             ..._stack,
-            React.cloneElement(outEl, {
+            cloneElement(outEl, {
               transitionOptions: settings.out,
               ...options,
             }),
             inEl,
           ]
         : [
-            React.cloneElement(outEl, {
+            cloneElement(outEl, {
               transitionOptions: settings.out,
               _onTransitionEnd: () =>
                 setStack((st) => {
@@ -151,7 +159,7 @@ const TransitionManager = ({
       const newEl = _p.pop();
       return [
         ..._p,
-        React.cloneElement(oldEl, {
+        cloneElement(oldEl, {
           transitionOptions: settings.out,
           _onTransitionEnd: () =>
             setStack((st) => {
@@ -160,7 +168,7 @@ const TransitionManager = ({
               return [...st, old];
             }),
         }),
-        React.cloneElement(newEl, {
+        cloneElement(newEl, {
           transitionOptions: settings.in,
           zIndex: 2,
         }),
@@ -179,7 +187,7 @@ const TransitionManager = ({
     if (type === "bedsheet") {
       if (overlayRoute) {
         setBedsheet({
-          element: React.cloneElement(overlays[overlayRoute], {
+          element: cloneElement(overlays[overlayRoute], {
             onChange,
             initialValue,
           }),
@@ -187,7 +195,7 @@ const TransitionManager = ({
         });
       } else if (overlayElement) {
         setBedsheet({
-          element: React.cloneElement(overlayElement, {
+          element: cloneElement(overlayElement, {
             onChange,
             initialValue,
           }),
@@ -200,16 +208,16 @@ const TransitionManager = ({
   /* Render Function */
   const renderStack = () => {
     let keys = {};
-
+    
     return stack.map((el, index) => {
       if (keys.hasOwnProperty(el.type.name)) {
         keys[el.type.name] = 0;
-        return React.cloneElement(el, {
+        return cloneElement(el, {
           key: `${el.type.name}_${keys[el.type.name]}`,
         });
       } else {
         keys[el.type.name] += 1;
-        return React.cloneElement(el, {
+        return cloneElement(el, {
           key: `${el.type.name}_${keys[el.type.name]}`,
         });
       }
@@ -219,7 +227,7 @@ const TransitionManager = ({
   const openCamera = (tools: any) => {
     setCamera({
       tools,
-      open: true
+      open: true,
     });
   };
 
@@ -249,7 +257,16 @@ const TransitionManager = ({
             {bedsheet.element}
           </Bedsheet>
         )}
-        {camera.open && <CameraOverlay close={() => setCamera({...camera, open: false})} {...camera.tools}/>}
+        {camera.open && (
+          <CameraOverlay
+            close={() => {
+              camera.tools.onClose && camera.tools.onClose()
+              setCamera({ ...camera, open: false });
+              
+            }}
+            {...camera.tools}
+          />
+        )}
         {loading.displayed && (
           <Loading
             open={loading.open}
