@@ -2,13 +2,13 @@ import * as React from "react"
 import Svg, { Defs, G, Path } from "react-native-svg"
 /* SVGR has dropped some elements not supported by react-native-svg: style */
 
-const CloseX = ({fill,  ...props}) => (
+const CloseX = ({fill = '#000',  ...props}) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
     width="100%"
     height="100%"
     viewBox="0 0 20.425 20.332"
-    stroke={fill || "#000"}
+    stroke={fill}
     strokeLinecap="round"
     strokeWidth={3}
     {...props}

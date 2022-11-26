@@ -5,8 +5,9 @@ import useOverlay from "../api/useOverlay";
 import { LargeHeader } from "../components/header";
 import FullSizeRecipeCard from "../components/RecipeCards/FullSizeRecipeCard";
 import Page from "../Page";
-import ViewRecipe from "../components/hook-fullpage/ViewRecipe";
-import SearchOverlay from "../components/hook-fullpage/SearchOverlay";
+import { PageProps } from "../../NavigationRouter";
+import { Recipe } from "../api/firebase";
+import NavigationPage from "../components/NavigationPage";
 
 const styles = StyleSheet.create({
   main: {
@@ -26,7 +27,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function FeedPage({ ...props }) {
+interface FeedPageProps extends PageProps<'home'> {
+
+}
+
+export default function FeedPage({ navigation, ...props }: FeedPageProps) {
   const headerShadow = useRef(new Animated.Value(0)).current;
   const { getRecipes, recipes } = useFirebase();
   const { overlay, setOverlay } = useOverlay();
@@ -35,20 +40,18 @@ export default function FeedPage({ ...props }) {
     getRecipes();
   }, []);
 
-  const openViewRecipe = (data) => {
-    setOverlay({
-      type: "fullpage",
-      overlayElement: <ViewRecipe data={data} />,
-    });
+  const openViewRecipe = (data: Recipe) => {
+    navigation.navigate('view-recipe', {data})
   };
 
   const openSearch = () => {
-    setOverlay({
-      type: "fullpage",
-      overlayElement: <SearchOverlay />,
-      transitionIn: 'swipeLeft',
-      transitionOut: 'swipeRight'
-    })
+    // setOverlay({
+    //   type: "fullpage",
+    //   overlayElement: <SearchOverlay />,
+    //   transitionIn: 'swipeLeft',
+    //   transitionOut: 'swipeRight'
+    // })
+    navigation.navigate('search')
   } 
 
   const scrollHandle = ({ nativeEvent }) => {
@@ -84,16 +87,17 @@ export default function FeedPage({ ...props }) {
             extrapolate: "clamp",
           }),
         };
-    
 
   return (
-    <Page transition="swipeRight" keyboardSafe={false} style={{backgroundColor: 'white'}}>
+    <NavigationPage>
       <LargeHeader
         style={animatedStyle}
         profilePic={true}
         searchButton={true}
         onSearchPress={openSearch}
         headerText="Home"
+        notificationButton={false}
+        onProfilePicPress={() => {}}
       />
       <ScrollView
         style={styles.main}
@@ -103,10 +107,10 @@ export default function FeedPage({ ...props }) {
       >
         <View style={styles.wrapper}>
           {recipes &&
-            recipes.map((rec) => (
+            recipes.map((recipe) => (
               <FullSizeRecipeCard
-                key={`recipe_card_${rec.id}`}
-                data={rec}
+                key={`recipe_card_${recipe.id}`}
+                data={recipe}
                 onPress={openViewRecipe}
               />
             ))}
@@ -114,6 +118,6 @@ export default function FeedPage({ ...props }) {
         </View>
       </ScrollView>
       {overlay}
-    </Page>
+    </NavigationPage>
   );
 }

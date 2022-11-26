@@ -6,6 +6,8 @@ import useFirebase from "../../api/useFirebase";
 import useOverlay from "../../api/useOverlay";
 import ViewRecipe from "./ViewRecipe";
 import { RecipeData } from "../../types/RecipeTypes";
+import { PageProps } from "../../../NavigationRouter";
+import NavigationPage from "../NavigationPage";
 
 const styles = StyleSheet.create({
   main: {
@@ -13,7 +15,7 @@ const styles = StyleSheet.create({
   },
   bodyHead: {
     flexDirection: "column",
-    marginVertical: 20
+    marginVertical: 20,
   },
   headText: {
     fontFamily: "Rubik_500",
@@ -22,54 +24,55 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function SearchOverlay({ close, ...props }) {
-  const { recipes, searchRecipes, clearRecipes } = useFirebase()
-  const { overlay, setOverlay} = useOverlay()
+interface SearchOverlayProps extends PageProps<"search"> {}
 
-  const backHandle = () => {
-    close();
-  };
+export default function SearchOverlay({
+  navigation,
+  ...props
+}: SearchOverlayProps) {
+  const { recipes, searchRecipes, clearRecipes } = useFirebase();
+  const { overlay, setOverlay } = useOverlay();
 
   const searchHandle = (val: string) => {
-    if (val === '') {
-      clearRecipes()
+    if (val === "") {
+      clearRecipes();
     } else {
-      searchRecipes(val.toLowerCase())
+      searchRecipes(val.toLowerCase());
     }
-  }
+  };
 
   const cardHandle = (data: RecipeData) => {
     setOverlay({
-      type: 'fullpage',
-      overlayElement: <ViewRecipe data={data}/>,
-      transitionIn: 'swipeUp',
-      transitionOut: 'swipeDown',
+      type: "fullpage",
+      overlayElement: <ViewRecipe data={data} />,
+      transitionIn: "swipeUp",
+      transitionOut: "swipeDown",
       useHeader: false,
       transitionSettings: {
-        transitionIn: 'swipeUp',
-        transitionOut: 'swipeDown',
+        transitionIn: "swipeUp",
+        transitionOut: "swipeDown",
         transitionTiming: 200,
-      }
-    })
-  }
+      },
+    });
+  };
 
   return (
-    <View style={{height:'100%'}}>
-      <>
-        <SmallHeader backButton={true} backText="Home" onBackPress={backHandle} />
-        <View style={styles.main}>
-          <View style={styles.bodyHead}>
-            <Text style={styles.headText}>Search</Text>
-            <Search onChangeText={searchHandle}/>
-          </View>
-          <FlatList
-            data={recipes && recipes}
-            renderItem={(item) => <SearchResultRecipeCard data={item.item} onPress={cardHandle}/>}
-            showsVerticalScrollIndicator={false}
-          />
+    <NavigationPage>
+      <SmallHeader backButtonShown={true} backText="Home"/>
+      <View style={styles.main}>
+        <View style={styles.bodyHead}>
+          <Text style={styles.headText}>Search</Text>
+          <Search onChangeText={searchHandle} />
         </View>
-      </>
+        <FlatList
+          data={recipes && recipes}
+          renderItem={(item) => (
+            <SearchResultRecipeCard data={item.item} onPress={cardHandle} />
+          )}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
       {overlay}
-    </View>
+    </NavigationPage>
   );
 }

@@ -4,13 +4,21 @@ import {
   Animated,
   Dimensions,
   Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   PanResponder,
-  ScrollView,
   StyleSheet,
   Text,
   View,
+  ViewStyle,
 } from "react-native";
-import Header from "../components/header";
+import { ScrollView } from "react-native-gesture-handler";
+import { useSharedValue } from "react-native-reanimated";
+import { PageProps } from "../../NavigationRouter";
+import { Recipe } from "../api/firebase";
+import { Header } from "../components/header"; 
+import { SMALL_HEADER_HEIGHT } from "../components/header/small";
+import NavigationPage from "../components/NavigationPage";
 import Page from "../Page";
 import CooktimeIcon from "../svg/jsx/CooktimeIcon";
 import FireIcon from "../svg/jsx/FireIcon";
@@ -25,6 +33,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get("window").width,
     width: Dimensions.get("window").width,
     backgroundColor: "white",
+    marginTop: SMALL_HEADER_HEIGHT
   },
   recipeTitle: {
     fontSize: 30,
@@ -82,25 +91,14 @@ const DATA = {
   photo: [],
 };
 
-export default function ViewRecipe({ data = DATA, ...props }) {
-  const [isScrolledToTop, setIsScrolledToTop] = useState(false);
-  const [translate, setTranslate] = useState(null);
+interface ViewRecipeProps extends PageProps<'view-recipe'> {
+  data?: Recipe
+}
 
-  console.log(data);
-  const pageResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onMoveShouldSetPanResponder: () =>
-          isScrolledToTop && translate !== null,
-        onPanResponderGrant: () => console.log("granted responder"),
-        onPanResponderMove:
-          translate &&
-          Animated.event([null, { dy: translate.y }], {
-            useNativeDriver: false,
-          }),
-      }),
-    [translate]
-  );
+export default function ViewRecipe({ navigation, route, ...props }: ViewRecipeProps) {
+  const { data } = route.params;
+  const headerStyle = useSharedValue<ViewStyle>({backgroundColor: 'rgba(255,255,255, 1)'})
+
 
   const formatTime = (time) => {
     let _return = "";
@@ -109,27 +107,16 @@ export default function ViewRecipe({ data = DATA, ...props }) {
     return _return;
   };
 
-  const scrollHandle = ({ nativeEvent }) => {
-    nativeEvent.contentOffset.y === 0 && setIsScrolledToTop(true);
-    // translate !== null && Animated.spring(translate.translate, {
-    //   toValue: {x: 0, y: -Dimensions.get('screen').height},
-    //   useNativeDriver: true
-    // })
-  };
-
-  const handleAnimatedProps = (animatedProps) => {
-    console.log('setting translate')
-    animatedProps.translate && setTranslate(animatedProps.translate);
+  const scrollHandle = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    headerStyle.value = {
+      backgroundColor: `rgba(255,255,255, ${1 * Math.max((SMALL_HEADER_HEIGHT - e.nativeEvent.contentOffset.y) / SMALL_HEADER_HEIGHT)})`
+    }
   };
 
   return (
-    <Page
-      transition="swipeUp"
-      useAnimatedProps={handleAnimatedProps}
-      {...pageResponder.panHandlers}
-    >
-      <Header closeButton={true} />
-      <ScrollView style={styles.main} onScroll={scrollHandle}>
+    <NavigationPage>
+      <Header closeButtonShown={true} animatedStyle={headerStyle} overlapHeader={true} />
+      <ScrollView onScroll={scrollHandle}>
         <Image
           style={styles.image}
           source={{
@@ -197,7 +184,7 @@ export default function ViewRecipe({ data = DATA, ...props }) {
           </View>
         </View>
       </ScrollView>
-    </Page>
+    </NavigationPage>
   );
 }
 
