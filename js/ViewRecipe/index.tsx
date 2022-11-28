@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
-import { PageProps } from "../../NavigationRouter";
+import { RootPageProps } from "../../routes/RootRouter";
 import { Recipe } from "../api/firebase";
 import { Header } from "../components/header"; 
 import { SMALL_HEADER_HEIGHT } from "../components/header/small";
@@ -91,7 +91,7 @@ const DATA = {
   photo: [],
 };
 
-interface ViewRecipeProps extends PageProps<'view-recipe'> {
+interface ViewRecipeProps extends RootPageProps<'view-recipe'> {
   data?: Recipe
 }
 

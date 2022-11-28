@@ -7,7 +7,7 @@ import * as Device from "expo-device";
 import "react-native-get-random-values";
 import FirebaseWrapper from "./js/context-providers/FirebaseProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import NavigationRouter from "./NavigationRouter";
+import NavigationRouter from "./routes/RootRouter";
 // import { decode, encode } from "base-64";
 
 // if (!global.btoa) {

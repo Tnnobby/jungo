@@ -17,7 +17,7 @@ import FormInput from "../../components/form/FormInput";
 import FormRadioGroup from "../../components/form/FormRadioGroup";
 import StatefulPressable from "../../components/StatefulPressable";
 import constants from "../../constants";
-import useLoading from "../../hooks/useLoading";
+import useLoading from "../../hooks/useLoading.old";
 import { useNavigation } from "../../hooks/useNavigation";
 import Page from "../../Page";
 import CloseX from "../../svg/jsx/CloseX";

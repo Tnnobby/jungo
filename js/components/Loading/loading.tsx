@@ -48,8 +48,8 @@ const styles = StyleSheet.create({
 });
 
 export default function Loading({
-  onOpen = () => {},
-  onClose = () => {},
+  onOpen = () => null,
+  onClose = () => null,
   open,
   ...props
 }: {
@@ -77,7 +77,7 @@ export default function Loading({
   }, [open]);
 
   return (
-    <View style={styles.position}>
+    <View style={styles.position} pointerEvents={open ? 'auto' : 'none' }>
       <Animated.View style={{ ...styles.main, opacity: animateOpacity }}>
         <View style={styles.bg} />
         <View style={styles.loadingBody}>

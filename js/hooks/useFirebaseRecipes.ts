@@ -15,7 +15,9 @@ import { v1 } from "uuid";
 import { useState, useContext } from "react";
 import { FirebaseContext } from "../context-providers/FirebaseProvider";
 
-export default function useFirebase() {
+
+// TODO add types here
+export default function useFirebaseRecipes() {
   const [recipes, setRecipes] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const { storage, db } = useContext(FirebaseContext);

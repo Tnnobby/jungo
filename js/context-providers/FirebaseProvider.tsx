@@ -54,15 +54,12 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
       hasDoc: true
     })
   }
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user)
     })
-
     return () => unsubscribe()
   }, [])
-
   useEffect(() => {
     if (user?.uid) {
       getUserDoc(user.uid)

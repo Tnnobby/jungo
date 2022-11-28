@@ -3,7 +3,7 @@ import { FirebaseContext } from "../../context-providers/FirebaseProvider";
 import Bedsheet from "../Bedsheet";
 import CameraOverlay from "../CameraOverlay";
 import { ErrorHandler } from "../ErrorHandler";
-import Loading from "../Loading";
+import Loading from "../Loading/loading";
 import { TransitionBuilder } from "./transition";
 import { OutTransitionSettings, Overlays } from "./type";
 

@@ -1,11 +1,8 @@
-import { useEffect } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { DatePicker } from "../../components/bedsheets/DatePicker";
+import NavigationPage from "../../components/NavigationPage";
 import StatefulPressable from "../../components/StatefulPressable";
 import constants from "../../constants";
-import { useNavigation } from "../../hooks/useNavigation";
-import { useOverlay } from "../../hooks/useOverlay";
-import Page from "../../Page";
+import { LoginPageProps } from "../../../routes/LoginRouter";
 
 const styles = StyleSheet.create({
   main: {
@@ -57,22 +54,19 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function LoginSplash({ ...props }) {
-  const { toPage } = useNavigation();
+interface LoginSplashPageProps extends LoginPageProps<'splash'> {
 
+}
+
+export default function LoginSplash({ navigation, route, ...props }: LoginSplashPageProps) {
   const onLoginPress = () => {
-    toPage({
-      toRoute: "login_login",
-    });
+    navigation.navigate('login-form')
   };
   const onSignupPress = () => {
-    toPage({
-      toRoute: "login_signup",
-    });
+    navigation.navigate('signup-form')
   };
-
   return (
-    <Page style={styles.main} keyboardSafe={true} {...props}>
+    <NavigationPage style={styles.main} {...props}>
       <Image source={require("../JungoMain.png")} />
       <Text style={styles.welcomeTxt}>
         Your new relationship with food begins here.
@@ -94,6 +88,6 @@ export default function LoginSplash({ ...props }) {
           <Text style={styles.loginText}>Log In</Text>
         </Pressable>
       </View>
-    </Page>
+    </NavigationPage>
   );
 }

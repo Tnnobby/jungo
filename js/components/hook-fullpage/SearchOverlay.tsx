@@ -2,11 +2,11 @@ import { SmallHeader } from "../header";
 import { View, StyleSheet, Text, FlatList } from "react-native";
 import Search from "../Search";
 import SearchResultRecipeCard from "../RecipeCards/SearchResultRecipeCard";
-import useFirebase from "../../api/useFirebase";
+import useFirebaseRecipes from "../../hooks/useFirebaseRecipes";
 import useOverlay from "../../api/useOverlay";
 import ViewRecipe from "./ViewRecipe";
 import { RecipeData } from "../../types/RecipeTypes";
-import { PageProps } from "../../../NavigationRouter";
+import { RootPageProps } from "../../../routes/RootRouter";
 import NavigationPage from "../NavigationPage";
 
 const styles = StyleSheet.create({
@@ -24,13 +24,13 @@ const styles = StyleSheet.create({
   },
 });
 
-interface SearchOverlayProps extends PageProps<"search"> {}
+interface SearchOverlayProps extends RootPageProps<"search"> {}
 
 export default function SearchOverlay({
   navigation,
   ...props
 }: SearchOverlayProps) {
-  const { recipes, searchRecipes, clearRecipes } = useFirebase();
+  const { recipes, searchRecipes, clearRecipes } = useFirebaseRecipes();
   const { overlay, setOverlay } = useOverlay();
 
   const searchHandle = (val: string) => {

@@ -1,11 +1,11 @@
 import { useEffect, useRef, useMemo } from "react";
 import { ScrollView, StyleSheet, Animated, View, Platform } from "react-native";
-import useFirebase from "../api/useFirebase";
+import useFirebaseRecipes from "../hooks/useFirebaseRecipes";
 import useOverlay from "../api/useOverlay";
 import { LargeHeader } from "../components/header";
 import FullSizeRecipeCard from "../components/RecipeCards/FullSizeRecipeCard";
 import Page from "../Page";
-import { PageProps } from "../../NavigationRouter";
+import { RootPageProps } from "../../routes/RootRouter";
 import { Recipe } from "../api/firebase";
 import NavigationPage from "../components/NavigationPage";
 
@@ -27,13 +27,13 @@ const styles = StyleSheet.create({
   },
 });
 
-interface FeedPageProps extends PageProps<'home'> {
+interface FeedPageProps extends RootPageProps<'home'> {
 
 }
 
 export default function FeedPage({ navigation, ...props }: FeedPageProps) {
   const headerShadow = useRef(new Animated.Value(0)).current;
-  const { getRecipes, recipes } = useFirebase();
+  const { getRecipes, recipes } = useFirebaseRecipes();
   const { overlay, setOverlay } = useOverlay();
 
   useEffect(() => {

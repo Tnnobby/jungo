@@ -9,7 +9,6 @@ import {
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
-import useFirebase from "../../api/useFirebase";
 import GeneralStyles from "../../components/GeneralStyles";
 import constants from "../../constants";
 import IngredientManager from "./IngredientManager";

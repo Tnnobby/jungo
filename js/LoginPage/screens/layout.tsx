@@ -1,17 +1,16 @@
+import { useNavigation } from "@react-navigation/native";
 import { useRef } from "react";
 import { useState } from "react";
 import { Image, Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
 import FormInput from "../../components/form/FormInput";
-import Header from "../../components/header";
+
 import LoginButton from "../../components/LoginButton";
 import {
   AppleSignIn,
   FacebookSignIn,
   GoogleSignIn,
 } from "../../components/loginButtons/LoginMethodButton";
-import StatefulPressable from "../../components/StatefulPressable";
-import constants from "../../constants";
-import { useNavigation } from "../../hooks/useNavigation";
+import NavigationPage from "../../components/NavigationPage";
 import Page from "../../Page";
 import CloseX from "../../svg/jsx/CloseX";
 import ContinueArrow from "../../svg/jsx/ContinueArrow";
@@ -69,19 +68,31 @@ const styles = StyleSheet.create({
   },
 });
 
+type LoginInfo = {
+  username: string;
+  password: string;
+}
+
+interface LoginLayoutProps {
+  welcomeMessage?: string;
+  onSubmit?: (info: LoginInfo) => void;
+  onClosePress?: () => void;
+  onError?: (e: any) => void;
+  login?: boolean
+}
+
 export default function LoginLayout({
   welcomeMessage,
   onSubmit,
+  onClosePress,
   onError,
   login = true,
-  ...props
-}) {
+}: LoginLayoutProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [emailValue, setEmailValue] = useState(null);
   const [passwordValue, setPasswordValue] = useState(null);
   const [invalidFields, setInvalidFields] = useState([]);
   const isSubmitted = useRef(false)
-  const { toPage, lastPage } = useNavigation();
 
   const onInputFocus = () => setIsTyping(true);
   const onInputBlur = () => setIsTyping(false);
@@ -96,19 +107,15 @@ export default function LoginLayout({
       if (passwordValue === null) {
         setInvalidFields((current) => [...current, "password"]);
       }
-      if (invalidFields > 0) return;
-      onSubmit && onSubmit({ email: emailValue, password: passwordValue });
+      if (invalidFields.length > 0) return;
+      onSubmit && onSubmit({ username: emailValue, password: passwordValue });
       isSubmitted.current = true
       setTimeout(() => isSubmitted.current = false, 500)
     }
   };
 
-  const onClosePress = () => {
-    lastPage()
-  }
-
   return (
-    <Page {...props}>
+    <NavigationPage>
       <View style={styles.headerRow}>
         <Image
           style={styles.logo}
@@ -175,6 +182,6 @@ export default function LoginLayout({
           {isTyping && <LoginButton onPress={submitHandle} />}
         </View>
       </View>
-    </Page>
+    </NavigationPage>
   );
 }

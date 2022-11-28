@@ -61,6 +61,7 @@ export const Error = ({
   const offset = useRef<any>(new Animated.ValueXY({ x: 0, y: 0 })).current;
   const setDelay = useDelay();
 
+  // TODO Redo this to use Animated.Race in reanimated, this will allow swiping and tapping to close
   const swipeHandlers = PanResponder.create({
     onMoveShouldSetPanResponder: (e, gs) => {
       return gs.dy > 0 || Math.abs(gs.dx) > 10;

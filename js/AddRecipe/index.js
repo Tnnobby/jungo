@@ -11,7 +11,7 @@ import {
 import { Animated } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { initNewRecipe } from "../../redux/reducers/newRecipeReducer";
-import useFirebase from "../api/useFirebase";
+import useFirebaseRecipes from "../hooks/useFirebaseRecipes";
 import { Header } from "../components/header";
 import { useNavigation } from "../hooks/useNavigation";
 import Page from "../Page";
@@ -29,7 +29,7 @@ export default function AddRecipe(props) {
   // Pages: 'start', 'ingredients', 'instruction'
   const [page, setPage] = useState(0);
   const [pageState, setPageState] = useState("set");
-  const { addRecipe } = useFirebase();
+  const { addRecipe } = useFirebaseRecipes();
   const recipe = useSelector((state) => state.edit_recipe);
   const dispatch = useDispatch();
   const navigation = useNavigation();
