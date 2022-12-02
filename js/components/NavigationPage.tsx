@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import { View, StyleSheet, ViewStyle, Pressable, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 interface NavigationPageProps {
@@ -9,11 +9,15 @@ interface NavigationPageProps {
 }
 
 export default function NavigationPage({ children, bgcolor, style }: NavigationPageProps) {
+  const dismissKeyboard = () => {
+    Keyboard.dismiss()
+  }
+
   return (
-    <SafeAreaView style={[{ backgroundColor: bgcolor || "white" }, styles.page, style]}>
+    <Pressable style={[{ backgroundColor: bgcolor || "white" }, styles.page, style]} onPress={dismissKeyboard}>
       <StatusBar backgroundColor={bgcolor || 'white'}/>
       {children}
-    </SafeAreaView>
+    </Pressable>
   );
 }
 
