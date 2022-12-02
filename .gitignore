@@ -12,6 +12,7 @@ web-build/
 
 # Reworked Components
 *.old.*
+*.old/
 
 # macOS
 .DS_Store
