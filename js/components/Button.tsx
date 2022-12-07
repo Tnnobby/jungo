@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, PressableProps, StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -21,16 +21,15 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function Button({ onPress, onPressIn, onPressOut, style, ...props }) {
+interface ButtonProps extends PressableProps {
+  style: StyleProp<ViewStyle>
+}
+
+// TODO : This button is in a weird spot between too specific and too broad (Used only in Profile header)
+export default function Button({ style, ...props }: ButtonProps) {
   return (
     <Pressable
-      style={{
-        ...styles.container,
-        ...style,
-      }}
-      onPress={onPress && onPress}
-      onPressIn={onPressIn && onPressIn}
-      onPressOut={onPressOut && onPressOut}
+      style={[styles.container, style]}
       {...props}
     >
       {props.children}
