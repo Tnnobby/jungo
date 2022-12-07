@@ -4,9 +4,8 @@ import useAuth from "../../api/useAuth";
 import LoginLayout from "./layout";
 import { Keyboard } from 'react-native'
 import { useAlert } from "../../hooks/useAlert";
-import { LoginPageProps } from "../../../routes/LoginRouter";
 import useLoading from "../../hooks/useLoading";
-
+import { LoginPageProps } from "../../../routes/routes";
 
 interface LoginMainPageProps extends LoginPageProps<'login-form'> {
 

@@ -1,4 +1,5 @@
-import { LoginPageProps } from "../../../routes/LoginRouter";
+
+import { LoginPageProps } from "../../../routes/routes";
 import useAuth from "../../api/useAuth";
 import { useAlert } from "../../hooks/useAlert";
 import { useNavigation } from "../../hooks/useNavigation";

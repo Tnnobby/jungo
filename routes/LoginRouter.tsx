@@ -6,7 +6,7 @@ import UserInfoPage from "../js/LoginPage/screens/UserInfoPage";
 import {Platform } from 'react-native'
 import useFirebase from "../js/hooks/useFirebase";
 import { useEffect } from "react";
-import { RootPageProps } from "./RootRouter";
+import { RootPageProps } from "./routes";
 
 export type LoginStack = {
   splash: undefined;
@@ -15,10 +15,7 @@ export type LoginStack = {
   "signup-info": undefined;
 };
 
-export type LoginPageProps<R extends keyof LoginStack> = NativeStackScreenProps<
-  LoginStack,
-  R
->;
+
 
 type LoginRouterProps = RootPageProps<'login'>
 
@@ -29,7 +26,7 @@ export default function LoginRouter({ navigation }: LoginRouterProps) {
 
   useEffect(() => {
     // Redirects to home page as soon as user is verified
-    if (user) navigation.navigate('home')
+    if (user) navigation.reset({index: 0, routes: [{name: 'home'}]})
   }, [user])
 
   return (

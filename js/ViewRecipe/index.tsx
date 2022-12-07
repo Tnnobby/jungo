@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useSharedValue } from "react-native-reanimated";
-import { RootPageProps } from "../../routes/RootRouter";
+import { RootPageProps } from "../../routes/routes";
 import { Recipe } from "../api/firebase";
 import { Header } from "../components/header"; 
 import { SMALL_HEADER_HEIGHT } from "../components/header/small";

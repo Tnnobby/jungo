@@ -1,13 +1,12 @@
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import { ScrollView, StyleSheet, Animated, View, Platform } from "react-native";
 import useFirebaseRecipes from "../hooks/useFirebaseRecipes";
 import useOverlay from "../api/useOverlay";
 import { LargeHeader } from "../components/header";
 import FullSizeRecipeCard from "../components/RecipeCards/FullSizeRecipeCard";
-import Page from "../Page";
-import { RootPageProps } from "../../routes/RootRouter";
 import { Recipe } from "../api/firebase";
 import NavigationPage from "../components/NavigationPage";
+import { RootPageProps } from "../../routes/routes";
 
 const styles = StyleSheet.create({
   main: {
@@ -27,21 +26,18 @@ const styles = StyleSheet.create({
   },
 });
 
-interface FeedPageProps extends RootPageProps<'home'> {
-
-}
+interface FeedPageProps extends RootPageProps<"home"> {}
 
 export default function FeedPage({ navigation, ...props }: FeedPageProps) {
   const headerShadow = useRef(new Animated.Value(0)).current;
   const { getRecipes, recipes } = useFirebaseRecipes();
-  const { overlay, setOverlay } = useOverlay();
 
   useEffect(() => {
     getRecipes();
   }, []);
 
   const openViewRecipe = (data: Recipe) => {
-    navigation.navigate('view-recipe', {data})
+    navigation.navigate("view-recipe", { data });
   };
 
   const openSearch = () => {
@@ -51,14 +47,14 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
     //   transitionIn: 'swipeLeft',
     //   transitionOut: 'swipeRight'
     // })
-    navigation.navigate('search')
-  } 
+    navigation.navigate("search");
+  };
 
   const scrollHandle = ({ nativeEvent }) => {
     const y = nativeEvent.contentOffset.y;
     typeof y === "number" && headerShadow.setValue(y);
   };
-  
+
   const animatedStyle =
     Platform.OS === "ios"
       ? {
@@ -72,7 +68,7 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
           shadowOpacity: headerShadow.interpolate({
             inputRange: [0, 0, 40],
             outputRange: [0, 0, 0.34],
-            extrapolate: 'clamp'
+            extrapolate: "clamp",
           }),
           shadowRadius: headerShadow.interpolate({
             inputRange: [0, 10, 40],
@@ -88,6 +84,11 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
           }),
         };
 
+  const profileOpenHandle = () => {
+    console.log("open profile");
+    navigation.navigate("profile");
+  };
+
   return (
     <NavigationPage>
       <LargeHeader
@@ -97,13 +98,15 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
         onSearchPress={openSearch}
         headerText="Home"
         notificationButton={false}
-        onProfilePicPress={() => {}}
+        onProfilePicPress={profileOpenHandle}
+        onLayout={(ev) => console.log(ev.nativeEvent.layout)}
       />
       <ScrollView
         style={styles.main}
         onScroll={scrollHandle}
         scrollEventThrottle={20}
         showsVerticalScrollIndicator={false}
+        onLayout={(ev) => console.log(ev.nativeEvent.layout)}
       >
         <View style={styles.wrapper}>
           {recipes &&
@@ -117,7 +120,6 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
           <View style={styles.scrollPlaceholder} />
         </View>
       </ScrollView>
-      {overlay}
     </NavigationPage>
   );
 }

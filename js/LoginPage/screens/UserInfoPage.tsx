@@ -15,6 +15,7 @@ import useAuth from "../../api/useAuth";
 import FormDateInput from "../../components/form/FormDateInput";
 import FormInput from "../../components/form/FormInput";
 import FormRadioGroup from "../../components/form/FormRadioGroup";
+import NavigationPage from "../../components/NavigationPage";
 import StatefulPressable from "../../components/StatefulPressable";
 import constants from "../../constants";
 import useLoading from "../../hooks/useLoading.old";
@@ -211,7 +212,7 @@ export default function UserInfoPage({ style, data, ...props }) {
     toPage({ toRoute: "login_splash", resetStack: true });
 
   return (
-    <Page style={{ ...style }} {...props}>
+    <NavigationPage style={{ ...style }} {...props}>
       <View style={styles.headerRow}>
         <Image
           style={styles.logo}
@@ -302,6 +303,6 @@ export default function UserInfoPage({ style, data, ...props }) {
           </View>
         </StatefulPressable>
       </View>
-    </Page>
+    </NavigationPage>
   );
 }
