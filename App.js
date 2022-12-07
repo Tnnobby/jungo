@@ -1,37 +1,20 @@
-import { Dimensions, LogBox, StyleSheet, View } from "react-native";
+import { Dimensions, StatusBar, StyleSheet, View } from "react-native";
 import { Provider } from "react-redux";
 import useFonts from "./js/hooks/useFonts";
 import store from "./redux/store";
-import Router from "./Router";
 import * as Device from "expo-device";
 import "react-native-get-random-values";
 import FirebaseWrapper from "./js/context-providers/FirebaseProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import NavigationRouter from "./routes/RootRouter";
-// import { decode, encode } from "base-64";
-
-// if (!global.btoa) {
-//   global.btoa = encode;
-// }
-
-// if (!global.atob) {
-//   global.atob = decode;
-// }
-
-const Constants = {
-  STATUS_BAR: Device.osName === "iOS" ? 44 : 24,
-};
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   container: {
-    top: Constants.STATUS_BAR,
     backgroundColor: "#fff",
     position: "relative",
     overflow: "hidden",
-    height: Dimensions.get("window").height - Constants.STATUS_BAR,
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    // backgroundColor: 'red'
+    height: Dimensions.get("window").height,
   },
 });
 
@@ -39,25 +22,14 @@ export default function App() {
   const fontsLoaded = useFonts();
 
   return (
-    <GestureHandlerRootView>
-      <Provider store={store}>
-        {fontsLoaded && (
+    <Provider store={store}>
+      {fontsLoaded && (
+        <GestureHandlerRootView style={{flex: 1}} onLayout={(ev) => console.log('GestureHandlerRootView:', ev.nativeEvent.layout)}>
           <FirebaseWrapper>
-            <View
-              style={{
-                ...styles.container,
-                height:
-                  Device.osName === "iOS"
-                    ? Dimensions.get("window").height - 66
-                    : Dimensions.get("window").height,
-                width: Dimensions.get("window").width,
-              }}
-            >
-              <NavigationRouter />
-            </View>
+            <NavigationRouter />
           </FirebaseWrapper>
-        )}
-      </Provider>
-    </GestureHandlerRootView>
+        </GestureHandlerRootView>
+      )}
+    </Provider>
   );
 }

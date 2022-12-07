@@ -1,29 +1,47 @@
 import { StatusBar } from "expo-status-bar";
-import { View, StyleSheet, ViewStyle, Pressable, Keyboard } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  StyleSheet,
+  Pressable,
+  Keyboard,
+} from "react-native";
+import {
+  SafeAreaView,
+  SafeAreaViewProps,
+} from "react-native-safe-area-context";
 
-interface NavigationPageProps {
-  bgcolor?: string;
-  style?: ViewStyle;
-  [key: string]: any;
+interface NavigationPageProps extends SafeAreaViewProps {
+  statusBarColor?: string;
 }
 
-export default function NavigationPage({ children, bgcolor, style }: NavigationPageProps) {
+export default function NavigationPage({
+  children,
+  statusBarColor,
+  style,
+  ...props
+}: NavigationPageProps) {
   const dismissKeyboard = () => {
-    Keyboard.dismiss()
-  }
+    Keyboard.dismiss();
+  };
 
   return (
-    <Pressable style={[{ backgroundColor: bgcolor || "white" }, styles.page, style]} onPress={dismissKeyboard}>
-      <StatusBar backgroundColor={bgcolor || 'white'}/>
-      {children}
-    </Pressable>
+    <SafeAreaView style={[{backgroundColor: 'white'}, style, { flex: 1 }]} {...props}>
+      <StatusBar backgroundColor={statusBarColor || "white"} />
+      <Pressable
+        style={{ flex: 1 }}
+        onPress={dismissKeyboard}
+        onLayout={(ev) =>
+          console.log("NavigationPage>Pressable:", ev.nativeEvent.layout)
+        }
+      >
+        {children}
+      </Pressable>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    overflow: 'hidden'
+    overflow: "hidden",
   },
 });
