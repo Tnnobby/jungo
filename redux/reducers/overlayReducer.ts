@@ -67,7 +67,6 @@ export const {
   setBedsheet,
   closeOverlay,
   setFullPageOverlay,
-  closeLoadingOverlay,
   setLoadingOverlayState,
 } = overlayReducer.actions;
 export default overlayReducer.reducer;

@@ -1,8 +1,9 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FollowButton from "./FollowButton";
 import NotificationButton from "./NotificationButton";
-import { useSelector } from "react-redux";
+import { useLocalAssets } from "../hooks/useLocalAssets";
+import { useAssets } from "expo-asset";
 
 const styles = StyleSheet.create({
   columnHead: {
@@ -59,18 +60,37 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   notificationContainer: {
-    marginRight: 5
-  }
+    marginRight: 5,
+  },
 });
 
-export default function ProfileHeader({profilePicUrl = "", bio = "", firstName, lastName}) {
-  const [following, setFollowing] = useState(0); // <- Need following in userDoc
-  const [notifications, setNotifications] = useState(0); // <- Need notifications in userDoc
+interface ProfileHeaderProps {
+  profilePicUrl?: string;
+  bio?: string;
+  firstName: string;
+  lastName: string;
+}
 
-  const onFollowPress = () => setFollowing(!following)
-  
-  const onNotificationPress = () => setNotifications(!notifications)
+export default function ProfileHeader({
+  profilePicUrl,
+  bio = "",
+  firstName,
+  lastName,
+}: ProfileHeaderProps) {
+  const [following, setFollowing] = useState<boolean>(false); // <- Need following in userDoc
+  const [notifications, setNotifications] = useState<boolean>(false); // <- Need notifications in userDoc
+  const [assets, error] = useAssets(
+    require(`../../assets/profile-pics/avatar-1.png`)
+  );
 
+  useEffect(() => {
+    console.log(error);
+    console.log("assets:", assets);
+  }, [error, assets]);
+
+  const onFollowPress = () => setFollowing(!following);
+
+  const onNotificationPress = () => setNotifications(!notifications);
 
   return (
     <View style={styles.columnHead}>
@@ -78,9 +98,13 @@ export default function ProfileHeader({profilePicUrl = "", bio = "", firstName, 
         <View style={styles.imageContainer}>
           <Image
             style={styles.profilePic}
-            source={{
-              uri: profilePicUrl,
-            }}
+            source={
+              profilePicUrl
+                ? {
+                    uri: profilePicUrl,
+                  }
+                : assets && assets[0]
+            }
           />
         </View>
         <View style={styles.rightContainer}>
@@ -90,15 +114,16 @@ export default function ProfileHeader({profilePicUrl = "", bio = "", firstName, 
           </View>
           <View style={styles.actionContainer}>
             <View style={styles.detailContainer}>
-              <Text style={styles.detailText}>
-                {`100 Followers`}
-              </Text>
-              <Text style={styles.detailText}>
-                {`36 Recipes`}
-              </Text>
+              <Text style={styles.detailText}>{`100 Followers`}</Text>
+              <Text style={styles.detailText}>{`36 Recipes`}</Text>
             </View>
             <View style={styles.buttonContainer}>
-              <View style={styles.notificationContainer}><NotificationButton onPress={onNotificationPress} active={notifications}/></View>
+              <View style={styles.notificationContainer}>
+                <NotificationButton
+                  onPress={onNotificationPress}
+                  active={notifications}
+                />
+              </View>
               <FollowButton onPress={onFollowPress} active={following} />
             </View>
           </View>

@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { RootState } from "../store";
 
 const INITIAL_STATE = {
   title: '',
@@ -47,8 +48,18 @@ const newRecipeReducer = createSlice({
       state.instructions.splice(index, 1, value);
     },
     removeInstruction: (state, payload) => {},
+    reorderInstructions: (state, {payload}) => {
+      return {
+        ...state,
+        instructions: payload
+      }
+    }
   },
 });
+
+export const selectRecipeFields = (state: RootState) => state.edit_recipe
+export const selectIngredients = (state: RootState) => state.edit_recipe.ingredients
+export const selectInstructions = (state: RootState) => state.edit_recipe.instructions
 
 export const {
   setNewRecipeField,
