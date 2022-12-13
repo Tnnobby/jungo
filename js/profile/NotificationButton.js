@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import Button from "../components/Button";
-import constants from "../constants";
+import { colors } from "../constants";
 import SVGIcon from "../svg/icons";
 
 const styles = StyleSheet.create({
@@ -18,12 +18,12 @@ const styles = StyleSheet.create({
 const STATE_STYLES = {
   inactive:{
     ...styles.button,
-    borderColor: constants.primary_color,
-    backgroundColor: constants.primary_color
+    borderColor: colors.primary_color,
+    backgroundColor: colors.primary_color
   },
   active:{
     ...styles.button,
-    borderColor: constants.primary_color,
+    borderColor: colors.primary_color,
     backgroundColor: 'white'
   }
 }
@@ -36,7 +36,7 @@ export default function NotificationButton ({active, ...props}) {
       {...props}
     >
       <View style={styles.icon} >
-        <SVGIcon icon='NotificationBell' fill={!active ? '#fff' : constants.primary_color}/>
+        <SVGIcon icon='NotificationBell' fill={!active ? '#fff' : colors.primary_color}/>
       </View>
     </Button>
   )

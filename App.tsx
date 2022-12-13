@@ -6,19 +6,24 @@ import "react-native-get-random-values";
 import FirebaseWrapper from "./js/context-providers/FirebaseProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import NavigationRouter from "./routes/RootRouter";
+import * as Device from "expo-device";
+import { ErrorHandler } from "./js/components/error-handler";
+import LoadingHandler from "./js/components/Loading/LoadingHandler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { JungoWrappers } from "./JungoWrapper";
+
+export const isTablet = Device.osName === "iPadOS";
 
 export default function App() {
   const fontsLoaded = useFonts();
 
   return (
-    <Provider store={store}>
+    <>
       {fontsLoaded && (
-        <GestureHandlerRootView style={{flex: 1}} onLayout={(ev) => console.log('GestureHandlerRootView:', ev.nativeEvent.layout)}>
-          <FirebaseWrapper>
-            <NavigationRouter />
-          </FirebaseWrapper>
-        </GestureHandlerRootView>
+        <JungoWrappers>
+          <NavigationRouter />
+        </JungoWrappers>
       )}
-    </Provider>
+    </>
   );
 }

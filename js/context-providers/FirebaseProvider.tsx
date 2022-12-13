@@ -1,8 +1,14 @@
 import { FirebaseApp, initializeApp } from "firebase/app";
-import { Auth, getAuth, User } from "firebase/auth";
-import { doc, Firestore, getDoc, getFirestore, Timestamp } from "firebase/firestore";
+import { Auth, getAuth, signOut, User } from "firebase/auth";
+import {
+  doc,
+  Firestore,
+  getDoc,
+  getFirestore,
+  Timestamp,
+} from "firebase/firestore";
 import { FirebaseStorage, getStorage } from "firebase/storage";
-import { createContext, useRef, useEffect, useState } from "react";
+import { createContext, useRef, useEffect, useState, useReducer } from "react";
 import firebaseConfig from "../../firebase.config";
 
 interface ProviderProps {
@@ -14,6 +20,7 @@ export interface FirebaseContextType {
   db: Firestore;
   user: JungoUser;
   storage: FirebaseStorage;
+  actions: FirebaseActions;
 }
 
 export interface UserDoc {
@@ -25,18 +32,69 @@ export interface UserDoc {
   username: string;
 }
 
-export interface JungoUser extends User {
+export interface JungoUser extends Partial<User> {
   doc?: UserDoc;
-  hasDoc?: boolean
-  
+  hasDoc?: boolean;
+  fetchingDoc?: boolean;
 }
+
+type FirebaseActions = {
+  logout: () => void;
+};
 
 export const FirebaseContext = createContext<FirebaseContextType>({
   auth: null,
   db: null,
   user: null,
-  storage: null
+  storage: null,
+  actions: { logout: () => null },
 });
+
+type UserAction = {
+  type:
+    | "FETCH_USER_DOC_START"
+    | "FETCH_USER_DOC_SUCCESS"
+    | "FETCH_USER_DOC_ERROR"
+    | "SET_USER";
+  doc?: UserDoc;
+  user?: User;
+};
+
+type UserReducer = (state: JungoUser, action: UserAction) => JungoUser;
+
+const userReducer: UserReducer = (state, action) => {
+  switch (action.type) {
+    case "FETCH_USER_DOC_START":
+      return {
+        ...state,
+        fetchingDoc: true,
+      };
+    case "FETCH_USER_DOC_SUCCESS":
+      return {
+        ...state,
+        doc: action.doc,
+        fetchingDoc: false,
+        hasDoc: true,
+      };
+    case "FETCH_USER_DOC_ERROR":
+      return {
+        ...state,
+        fetchingDoc: false,
+      };
+    case "SET_USER": {
+      return {
+        ...state,
+        ...action.user,
+        doc: null,
+        hasDoc: false,
+      };
+    }
+    default:
+      return state;
+  }
+};
+
+const initialState: JungoUser = {};
 
 const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
   children,
@@ -45,42 +103,41 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
   const db = useRef<Firestore>(getFirestore(app)).current;
   const auth = useRef<Auth>(getAuth(app)).current;
   const storage = useRef<FirebaseStorage>(getStorage(app)).current;
-  const [user, setUser] = useState<JungoUser>(null)
+  const [user, dispatchUser] = useReducer<UserReducer>(
+    userReducer,
+    initialState
+  );
 
-  const setUserDoc = (doc: UserDoc) => {
-    setUser({
-      ...user,
-      doc,
-      hasDoc: true
-    })
-  }
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user)
-    })
-    return () => unsubscribe()
-  }, [])
   useEffect(() => {
     if (user?.uid) {
+      dispatchUser({ type: "FETCH_USER_DOC_START" });
       getUserDoc(user.uid)
         .then((doc) => {
-          setUserDoc(doc)
+          dispatchUser({ type: "FETCH_USER_DOC_SUCCESS", doc });
         })
         .catch((error) => {
-          console.error(error)
-        })
+          dispatchUser({ type: "FETCH_USER_DOC_ERROR" });
+          console.error(error);
+        });
     }
-  }, [user?.uid])
+  }, [user?.uid]);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((_user) => {
+      dispatchUser({ type: "SET_USER", user: _user });
+    });
+    return () => unsubscribe();
+  }, []);
 
   const getUserDoc: (uid: string) => Promise<UserDoc> = async (uid: string) => {
     return new Promise((resolve, reject) => {
       const ref = doc(db, "users", uid);
       getDoc(ref)
         .then((val) => {
-          if (val.exists()){
-            resolve(val.data() as UserDoc)
+          if (val.exists()) {
+            resolve(val.data() as UserDoc);
           } else {
-            reject("UserDoc does not Exist.")
+            reject("UserDoc does not Exist.");
           }
         })
         .catch((err) => {
@@ -90,13 +147,22 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
     });
   };
 
+  const logout = () => {
+    signOut(auth).then((val) => {
+      
+    })
+  };
+
   return (
     <FirebaseContext.Provider
       value={{
         auth,
         db,
         user,
-        storage
+        storage,
+        actions: {
+          logout
+        }
       }}
     >
       {children}

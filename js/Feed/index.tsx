@@ -1,5 +1,12 @@
 import { useEffect, useRef } from "react";
-import { ScrollView, StyleSheet, Animated, View, Platform } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Animated,
+  View,
+  Platform,
+  StatusBar,
+} from "react-native";
 import useFirebaseRecipes from "../hooks/useFirebaseRecipes";
 import useOverlay from "../api/useOverlay";
 import { LargeHeader } from "../components/header";
@@ -7,6 +14,7 @@ import FullSizeRecipeCard from "../components/RecipeCards/FullSizeRecipeCard";
 import { Recipe } from "../api/firebase";
 import NavigationPage from "../components/NavigationPage";
 import { RootPageProps } from "../../routes/routes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   main: {
@@ -30,6 +38,7 @@ interface FeedPageProps extends RootPageProps<"home"> {}
 
 export default function FeedPage({ navigation, ...props }: FeedPageProps) {
   const headerShadow = useRef(new Animated.Value(0)).current;
+  const insets = useSafeAreaInsets();
   const { getRecipes, recipes } = useFirebaseRecipes();
 
   useEffect(() => {
@@ -61,7 +70,7 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
           shadowColor: "#000",
           shadowOffset: {
             width: 0,
-            height: 5,
+            height: 8,
           },
           // shadowOpacity: 0.34,
           // // shadowRadius: 6.27,
@@ -90,7 +99,9 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
   };
 
   return (
-    <NavigationPage>
+    <NavigationPage
+      edges={Platform.OS === "ios" ? ["bottom", "left", "right"] : undefined}
+    >
       <LargeHeader
         style={animatedStyle}
         profilePic={true}
@@ -99,7 +110,7 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
         headerText="Home"
         notificationButton={false}
         onProfilePicPress={profileOpenHandle}
-        onLayout={(ev) => console.log(ev.nativeEvent.layout)}
+        navColor={Platform.OS === "ios" ? "white" : undefined}
       />
       <ScrollView
         style={styles.main}

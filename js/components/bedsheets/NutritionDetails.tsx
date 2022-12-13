@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import constants from "../../constants";
-import GeneralStyles from "../GeneralStyles";
-import ActionRow from "./ActionRow";
+import ActionRow from "../Bedsheet/ActionRow";
 import NutritionTable from "./NutritionTable";
 
 const styles = StyleSheet.create({
@@ -87,7 +85,7 @@ export default function NutritionDetails({
     <View style={styles.main}>
       <Text style={styles.header}>Nutrition Information</Text>
       <NutritionTable data={data} updateValue={updateRowHandle} />
-      <ActionRow doneHandle={doneHandle} cancelHandle={cancelHandle} />
+      <ActionRow onDone={doneHandle} onCancel={cancelHandle} />
     </View>
   );
 }

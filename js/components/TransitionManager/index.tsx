@@ -1,8 +1,8 @@
 import { useState, createContext, useContext, useEffect, cloneElement } from "react";
 import { FirebaseContext } from "../../context-providers/FirebaseProvider";
-import Bedsheet from "../Bedsheet";
+import Bedsheet from "../Bedsheet.old";
 import CameraOverlay from "../CameraOverlay";
-import { ErrorHandler } from "../ErrorHandler";
+import { ErrorHandler } from "../error-handler";
 import Loading from "../Loading/loading";
 import { TransitionBuilder } from "./transition";
 import { OutTransitionSettings, Overlays } from "./type";

@@ -29,9 +29,14 @@ const newRecipeReducer = createSlice({
         ...payload.payload,
       };
     },
-    addIngredient: (state, payload) => {
-      const [index, value] = payload.payload;
-      state.ingredients.splice(index, 0, value);
+    addIngredient: (state, {payload}) => {
+      return {
+        ...state,
+        ingredients: [
+          ...state.ingredients,
+          payload
+        ]
+      }
     },
     editIngredient: (state, payload) => {
       const [index, value] = payload.payload;

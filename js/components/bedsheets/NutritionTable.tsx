@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import constants from "../../constants";
 
 const styles = StyleSheet.create({
   tableMain: {

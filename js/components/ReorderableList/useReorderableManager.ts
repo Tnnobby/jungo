@@ -22,7 +22,8 @@ export interface ReorderableManager {
   setMoving: MovingSetter;
   setMovingEnded: MovingSetter;
   checkOverlap: (id: string, verticalOffset: number) => void;
-  calculateOffset: () => number
+  calculateOffset: () => number;
+  isMoving: boolean
   elements: ReorderableElement[];
 }
 
@@ -55,14 +56,6 @@ export default function useReorderableManager(list: any[]): ReorderableManager {
     });
     setElements(_temp);
   };
-  function moveItem(from: number, to: number) {
-    const _temp = [...elements];
-    // remove `from` item and store it
-    var f = _temp.splice(from, 1)[0];
-    // insert stored item into position `to`
-    _temp.splice(to, 0, f);
-    setElements(_temp);
-  }
 
   const _setLayout: LayoutSetter = (id: string, layout: LayoutRectangle) => {
     setElements((old) => {
@@ -83,6 +76,7 @@ export default function useReorderableManager(list: any[]): ReorderableManager {
       current: elements.findIndex((val) => val.id === id),
     };
     tempOrder.current = [...elements]
+    setMoving(true)
   };
   const _setMovingEnded: MovingSetter = () => setMoving(false);
   const _checkOverlap: (id: string, verticalOffset: number) => void = (
@@ -137,6 +131,7 @@ export default function useReorderableManager(list: any[]): ReorderableManager {
     setMovingEnded: _setMovingEnded,
     checkOverlap: _checkOverlap,
     calculateOffset,
+    isMoving: false,
     elements,
   };
 }

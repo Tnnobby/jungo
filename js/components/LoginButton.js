@@ -1,11 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
-import constants from "../constants";
+import { colors } from "../constants";
 import ContinueArrow from "../svg/jsx/ContinueArrow";
 import StatefulPressable from "./StatefulPressable";
 
 const styles = StyleSheet.create({
   submitBtn: {
-    backgroundColor: constants.button_color,
+    backgroundColor: colors.button_color,
     borderRadius: 100,
     padding: 10,
     height: 42,

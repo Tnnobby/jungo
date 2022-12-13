@@ -1,58 +1,57 @@
-import { useDispatch } from "react-redux";
-import { setUserInfo } from "../../../redux/reducers/userReducer";
 import useAuth from "../../api/useAuth";
 import LoginLayout from "./layout";
-import { Keyboard } from 'react-native'
+import { Keyboard } from "react-native";
 import { useAlert } from "../../hooks/useAlert";
 import useLoading from "../../hooks/useLoading";
 import { LoginPageProps } from "../../../routes/routes";
 
-interface LoginMainPageProps extends LoginPageProps<'login-form'> {
-
-}
-export default function LoginMainPage({ navigation }: LoginMainPageProps) {  
+interface LoginMainPageProps extends LoginPageProps<"login-form"> {}
+export default function LoginMainPage({ navigation }: LoginMainPageProps) {
   const { loginUser } = useAuth();
-  const loading = useLoading()
-  const { error } = useAlert()
-  const dispatch = useDispatch();
+  const loading = useLoading();
+  const { error } = useAlert();
 
   const onSubmit = ({ username, password }) => {
-    loading.open()
-    Keyboard.dismiss()
+    loading.open();
+    Keyboard.dismiss();
     loginUser({
       method: "email",
       email: username,
       password,
     })
       .then((val) => {
-        val && dispatch(setUserInfo(val));
-        loading.close()
-        const parent = navigation.getParent()
-
-        if (parent) parent.navigate('home')
+        // val && dispatch(setUserInfo(val));
+        loading.close();
+        const parent = navigation.getParent();
+        if (parent) parent.navigate("home");
+        else
+          error({
+            message: "There was an error navigating to your feed.",
+            key: "login_nav_error",
+          });
       })
       .catch((e) => {
         switch (e.code) {
           case "auth/missing-email":
-            error({key: e.code, message: 'No Email'})
+            error({ key: e.code, message: "No Email" });
             break;
           case "auth/invalid-email":
-            error({key: e.code, message: 'Invalid Email'})
+            error({ key: e.code, message: "Invalid Email" });
             break;
           case "auth/wrong-password":
-            error({key: e.code, message: 'Incorrect Email or Password'})
+            error({ key: e.code, message: "Incorrect Email or Password" });
             break;
           default:
             console.error(error);
             break;
         }
-        loading.close()
+        loading.close();
       });
   };
 
   const closeHandle = () => {
-    navigation.navigate('splash')
-  }
+    navigation.navigate("splash");
+  };
 
   return (
     <LoginLayout

@@ -36,8 +36,14 @@ export default function ReorderableItem({
   const wrappedManager = useWrappedManager(manager, id);
   const gesture = Gesture.Pan()
     .runOnJS(true)
+    .shouldCancelWhenOutside(false)
+    .cancelsTouchesInView(true)
     .activateAfterLongPress(500)
+    .onBegin(() => {
+      console.log('begin')
+    })
     .onStart(() => {
+      console.log('start')
       raiseStyles.value = {
         elevation: 7,
         scale: 1.03,
@@ -54,7 +60,11 @@ export default function ReorderableItem({
         ev.translationY + wrappedManager.calculateOffset()
       );
     })
+    // .onTouchesCancelled((ev) => {
+    //   console.log(ev)
+    // })
     .onEnd((ev) => {
+      console.log('moving ended')
       raiseStyles.value = {
         elevation: 0,
         scale: 1,
@@ -94,6 +104,7 @@ export default function ReorderableItem({
       style={[styles.container, animatedStyles]}
       onLayout={layoutHandle}
       layout={Layout.springify().mass(0.5)}
+      collapsable={false}
     >
       <GestureDetector gesture={gesture}>{children}</GestureDetector>
     </Animated.View>

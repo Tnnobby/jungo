@@ -1,22 +1,20 @@
-import { useMemo, useRef } from "react";
-import { useState } from "react";
 import {
-  Animated,
   Dimensions,
+  FlatList,
   Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  PanResponder,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
   ViewStyle,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { useSharedValue } from "react-native-reanimated";
+import Animated, { Layout, useSharedValue } from "react-native-reanimated";
 import { RootPageProps } from "../../routes/routes";
 import { Recipe } from "../api/firebase";
-import { Header } from "../components/header"; 
+import { Header } from "../components/header";
 import { SMALL_HEADER_HEIGHT } from "../components/header/small";
 import NavigationPage from "../components/NavigationPage";
 import Page from "../Page";
@@ -30,10 +28,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   image: {
-    height: Dimensions.get("window").width,
-    width: Dimensions.get("window").width,
     backgroundColor: "white",
-    marginTop: SMALL_HEADER_HEIGHT
+    marginTop: SMALL_HEADER_HEIGHT,
   },
   recipeTitle: {
     fontSize: 30,
@@ -91,14 +87,16 @@ const DATA = {
   photo: [],
 };
 
-interface ViewRecipeProps extends RootPageProps<'view-recipe'> {
-  data?: Recipe
+interface ViewRecipeProps extends RootPageProps<"view-recipe"> {
+  data?: Recipe;
 }
 
-export default function ViewRecipe({ navigation, route, ...props }: ViewRecipeProps) {
+export default function ViewRecipe({ navigation, route }: ViewRecipeProps) {
   const { data } = route.params;
-  const headerStyle = useSharedValue<ViewStyle>({backgroundColor: 'rgba(255,255,255, 1)'})
-
+  const headerStyle = useSharedValue<ViewStyle>({
+    backgroundColor: "rgba(255,255,255, 1)",
+  });
+  const dimensions = useWindowDimensions();
 
   const formatTime = (time) => {
     let _return = "";
@@ -109,30 +107,53 @@ export default function ViewRecipe({ navigation, route, ...props }: ViewRecipePr
 
   const scrollHandle = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     headerStyle.value = {
-      backgroundColor: `rgba(255,255,255, ${1 * Math.max((SMALL_HEADER_HEIGHT - e.nativeEvent.contentOffset.y) / SMALL_HEADER_HEIGHT)})`
-    }
+      backgroundColor: `rgba(255,255,255, ${
+        1 *
+        Math.max(
+          (SMALL_HEADER_HEIGHT - e.nativeEvent.contentOffset.y) /
+            SMALL_HEADER_HEIGHT
+        )
+      })`,
+    };
   };
 
   return (
-    <NavigationPage>
-      <Header closeButtonShown={true} animatedStyle={headerStyle} overlapHeader={true} />
-      <ScrollView onScroll={scrollHandle}>
-        <Image
-          style={styles.image}
-          source={{
-            uri: "https://cdn.pixabay.com/photo/2017/01/30/13/49/pancakes-2020863__480.jpg",
+    <NavigationPage keyboardSafe={false}>
+      <Header
+        closeButtonShown={true}
+        animatedStyle={headerStyle}
+        overlapHeader={true}
+      />
+      <ScrollView onScroll={scrollHandle} scrollEventThrottle={16}>
+        <Animated.View
+          style={{
+            ...styles.image,
+            height: dimensions.width,
+            width: dimensions.width,
           }}
-        />
+        >
+          <Image
+            style={{ height: "100%", width: "100%" }}
+            source={{
+              uri: "https://cdn.pixabay.com/photo/2017/01/30/13/49/pancakes-2020863__480.jpg",
+            }}
+          />
+        </Animated.View>
+
         <View style={styles.body}>
           <Text style={styles.recipeTitle}>{data.details.title}</Text>
           <View style={styles.row} /* Preheat / Cooktime */>
             <View style={{ ...styles.itemRow, marginRight: 24 }}>
               <CooktimeIcon fill="black" style={{ marginRight: 6 }} />
-              <Text style={styles.item}>{formatTime(data.details.preptime)}</Text>
+              <Text style={styles.item}>
+                {formatTime(data.details.preptime)}
+              </Text>
             </View>
             <View style={styles.itemRow}>
               <FireIcon fill="black" scale={1.2} style={{ marginRight: 6 }} />
-              <Text style={styles.item}>{formatTime(data.details.cooktime)}</Text>
+              <Text style={styles.item}>
+                {formatTime(data.details.cooktime)}
+              </Text>
             </View>
           </View>
           <View style={styles.row} /* Nutrition Facts */>
@@ -189,5 +210,3 @@ export default function ViewRecipe({ navigation, route, ...props }: ViewRecipePr
 }
 
 const Bullet = () => <View style={styles.bullet} />;
-
-

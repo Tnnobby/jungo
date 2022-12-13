@@ -9,7 +9,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import constants from "../../constants";
 import { LinearGradient } from "expo-linear-gradient";
 import { useDispatch } from "react-redux";
 import * as Haptics from "expo-haptics";
@@ -17,7 +16,8 @@ import {
   closeOverlay,
   setOverlayValue,
 } from "../../../redux/reducers/overlayReducer";
-import ActionRow from "./ActionRow";
+import ActionRow from "../Bedsheet/ActionRow";
+import { colors } from "../../constants";
 
 const TEMP_BOUNDS = {
   high: 700,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: "50%",
     transform: [{ translateX: -4 }],
-    backgroundColor: constants.primary_color,
+    backgroundColor: colors.primary_color,
     height: 40,
     width: 4,
     borderRadius: 9,
@@ -236,7 +236,7 @@ export default function Preheat({
           />
         </View>
       </View>
-      <ActionRow doneHandle={doneHandle} cancelHandle={cancelHandle} />
+      <ActionRow onDone={doneHandle} onCancel={cancelHandle} />
     </View>
   );
 }

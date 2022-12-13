@@ -16,7 +16,7 @@ import { useState, useContext } from "react";
 import { FirebaseContext } from "../context-providers/FirebaseProvider";
 
 
-// TODO add types here
+// TODO : add types here
 export default function useFirebaseRecipes() {
   const [recipes, setRecipes] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -70,6 +70,7 @@ export default function useFirebaseRecipes() {
   };
 
   const searchRecipes = (searchTerm) => {
+    console.log('hook: ', searchTerm)
     const q = query(
       collection(db, "recipes"),
       orderBy("searchable_title"),
@@ -89,6 +90,7 @@ export default function useFirebaseRecipes() {
           resolve(true);
         })
         .catch((error) => {
+          console.error(error)
           reject(error);
         });
     });

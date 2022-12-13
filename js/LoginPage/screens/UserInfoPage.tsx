@@ -11,16 +11,16 @@ import {
 } from "react-native";
 import { useDispatch } from "react-redux";
 import { setUserInfo } from "../../../redux/reducers/userReducer";
+import { useLoginContext } from "../../context-providers/LoginContextType";
+import { LoginPageProps } from "../../../routes/routes";
 import useAuth from "../../api/useAuth";
 import FormDateInput from "../../components/form/FormDateInput";
 import FormInput from "../../components/form/FormInput";
-import FormRadioGroup from "../../components/form/FormRadioGroup";
+import { FormRadioGroup } from "../../components/form/FormRadioGroup";
 import NavigationPage from "../../components/NavigationPage";
 import StatefulPressable from "../../components/StatefulPressable";
-import constants from "../../constants";
-import useLoading from "../../hooks/useLoading.old";
-import { useNavigation } from "../../hooks/useNavigation";
-import Page from "../../Page";
+import { colors } from "../../constants";
+import useLoading from "../../hooks/useLoading";
 import CloseX from "../../svg/jsx/CloseX";
 import ContinueArrow from "../../svg/jsx/ContinueArrow";
 
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   backBtnCont: {
     height: 46,
     width: 46,
-    backgroundColor: constants.button_color,
+    backgroundColor: colors.button_color,
     borderRadius: 100,
     elevation: 3,
     justifyContent: "center",
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   },
   continueBtnCont: {
     flexDirection: "row",
-    backgroundColor: constants.button_color,
+    backgroundColor: colors.button_color,
     borderRadius: 100,
     elevation: 3,
     justifyContent: "center",
@@ -125,32 +125,30 @@ const GOAL_OPTIONS = [
   "Prefer Not To Say",
 ];
 
-export default function UserInfoPage({ style, data, ...props }) {
-  const [invalidFields, setInvalidFields] = useState([]);
-  const activitySetting = useRef(null);
-  const birthday = useRef(null);
-  const firstName = useRef(null);
-  const lastName = useRef(null);
-  const username = useRef(null);
+type UserInfoPageProps = LoginPageProps<"signup-info">;
 
-  const setFirstName = (val) => (firstName.current = val);
-  const setActivitySetting = (val) => (activitySetting.current = val);
-  const setBirthday = (val) => (birthday.current = val);
-  const setLastName = (val) => (lastName.current = val);
-  const setUsername = (val) => (username.current = val);
+const UserInfoPage: React.FC<UserInfoPageProps> = ({ navigation, route }) => {
+  const {
+    user,
+    activitySetting,
+    birthday,
+    firstName,
+    lastName,
+    username,
+    invalidFields,
+    setActivitySetting,
+    setBirthday,
+    setFirstName,
+    setLastName,
+    setUsername,
+  } = useLoginContext();
 
   const { createUserDoc } = useAuth();
   const loading = useLoading();
-  const { lastPage, toPage } = useNavigation();
-
   const dispatch = useDispatch();
+  console.log("In UserInfoPage");
 
-  useEffect(() => {
-    if (!data) toPage({ toRoute: "login_splash", resetStack: false });
-    console.log('userinf', data)
-  }, [data]);
-
-  const placeholderDate = () => {
+  const placeholderDate: () => Date = () => {
     const _d = new Date();
     _d.setFullYear(_d.getFullYear() - 18);
     return _d;
@@ -158,26 +156,18 @@ export default function UserInfoPage({ style, data, ...props }) {
 
   const continueHandle = () => {
     loading.open();
-    setInvalidFields([]);
-    let invalid = [];
-    if (firstName.current === null) invalid.push("firstName");
-    if (lastName.current === null) invalid.push("lastName");
-    if (activitySetting.current === null) invalid.push("activitySetting");
-    if (username.current === null) invalid.push("username");
-    if (birthday.current === null) invalid.push("birthday");
-    if (invalid.length > 0) {
-      setInvalidFields(invalid);
+    if (invalidFields.length > 0) {
       loading.close();
       return;
     }
     const _data = {
-      uid: data.uid,
+      uid: user.uid,
       data: {
-        first_name: firstName.current,
-        last_name: lastName.current,
-        username: username.current,
-        activity_setting: activitySetting.current.value,
-        birthday: birthday.current,
+        first_name: firstName,
+        last_name: lastName,
+        username: username,
+        activity_setting: activitySetting.value,
+        birthday: birthday,
       },
     };
     createUserDoc(_data)
@@ -189,14 +179,11 @@ export default function UserInfoPage({ style, data, ...props }) {
         });
         dispatch(
           setUserInfo({
-            ...data,
+            ...user,
             ...val,
           })
         );
-        toPage({
-          toRoute: "profile",
-          resetStack: true,
-        });
+        navigation.getParent().navigate("home");
       })
       .catch((error) => {
         console.error(error);
@@ -207,12 +194,11 @@ export default function UserInfoPage({ style, data, ...props }) {
     console.log(val.nativeEvent.layout);
   };
 
-  const backHandle = () => lastPage();
-  const closeHandle = () =>
-    toPage({ toRoute: "login_splash", resetStack: true });
+  const backHandle = () => navigation.goBack();
+  const closeHandle = () => navigation.navigate("splash");
 
   return (
-    <NavigationPage style={{ ...style }} {...props}>
+    <NavigationPage>
       <View style={styles.headerRow}>
         <Image
           style={styles.logo}
@@ -255,10 +241,11 @@ export default function UserInfoPage({ style, data, ...props }) {
             <View style={styles.formSubgroup}>
               <Text style={styles.groupLabel}>Birthday</Text>
               <View style={styles.inputGroup}>
+                {/* TODO : Fix this, probably need to refactor FormDateInput a bit */}
                 <FormDateInput
+                  value={birthday}
                   placeholder={placeholderDate()}
                   onChange={setBirthday}
-                  style={styles.input}
                 />
               </View>
             </View>
@@ -282,7 +269,7 @@ export default function UserInfoPage({ style, data, ...props }) {
           </View>
         </Pressable>
       </ScrollView>
-      <View style={styles.floatingBtnRow} onLayout={layoutHandle}>
+      <View style={styles.floatingBtnRow}>
         <StatefulPressable
           style={styles.backBtnCont}
           pressingStyle={{ elevation: 2 }}
@@ -305,4 +292,6 @@ export default function UserInfoPage({ style, data, ...props }) {
       </View>
     </NavigationPage>
   );
-}
+};
+
+export default UserInfoPage;

@@ -1,6 +1,6 @@
 import { Text } from "react-native"
 import Button from "../components/Button"
-import constants from "../constants"
+import { colors } from "../constants"
 
 const STYLES = {
   width: 106
@@ -9,12 +9,12 @@ const STYLES = {
 const STATE_STYLES = {
   inactive:{
     width: 106,
-    borderColor: constants.primary_color,
-    backgroundColor: constants.primary_color
+    borderColor: colors.primary_color,
+    backgroundColor: colors.primary_color
   },
   active:{
     width: 106,
-    borderColor: constants.primary_color,
+    borderColor: colors.primary_color,
     backgroundColor: 'white'
   }
 }
@@ -34,7 +34,7 @@ export default function FollowButton (props) {
         lineHeight: 24,
         fontFamily: 'Rubik_600',
         color: 'white',
-        color: props.active ? constants.primary_color : 'white' 
+        color: props.active ? colors.primary_color : 'white' 
       }}
       >
         {props.active ? 'Following' : 'Follow'}

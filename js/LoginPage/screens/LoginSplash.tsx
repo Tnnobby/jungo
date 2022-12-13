@@ -1,13 +1,12 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { LoginPageProps } from "../../../routes/routes";
 import NavigationPage from "../../components/NavigationPage";
 import StatefulPressable from "../../components/StatefulPressable";
-import constants from "../../constants";
-import { LoginPageProps } from "../../../routes/LoginRouter";
+import { colors } from "../../constants";
 
 const styles = StyleSheet.create({
   main: {
-    width: "100%",
-    height: "100%",
+    flex: 1,
     paddingTop: 20,
     alignItems: "center",
     overflow: "hidden",
@@ -24,7 +23,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   signupBtn: {
-    backgroundColor: constants.button_color,
+    backgroundColor: colors.button_color,
     marginTop: 40,
     alignItems: "center",
     justifyContent: "center",
@@ -48,7 +47,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {},
   loginText: {
-    color: constants.button_color,
+    color: colors.button_color,
     fontSize: 16,
     fontFamily: "Rubik_500",
   },

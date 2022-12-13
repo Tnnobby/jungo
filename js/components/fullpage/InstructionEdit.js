@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
-import constants from "../../constants";
+import { colors } from "../../constants";
 import GeneralStyles from "../GeneralStyles";
 
 const styles = StyleSheet.create({
@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
   doneBtn: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: constants.primary_color,
+    backgroundColor: colors.primary_color,
     borderRadius: 100
   },
   doneTxt: {
@@ -58,7 +58,7 @@ export default function InstructionEdit ({ setValue, close, title, initialValue,
     <View
       style={styles.main}
     >
-      <Text style={{...GeneralStyles.header, color:constants.primary_color}}>Edit Step {parseInt(id.split('_')[1]) + 1}</Text>
+      <Text style={{...GeneralStyles.header, color:colors.primary_color}}>Edit Step {parseInt(id.split('_')[1]) + 1}</Text>
       <Pressable style={styles.editBox} onPress={inputPress}>
         <TextInput
           placeholder={"Enter Description"}

@@ -1,6 +1,6 @@
 import { useContext } from 'react'
-import { ErrorContext } from '../components/ErrorHandler'
-import { ErrorTemplate } from "../components/ErrorHandler/types"
+import { ErrorContext } from '../components/error-handler'
+import { ErrorTemplate } from "../components/error-handler/types"
 
 interface AlertProps {
   message: string;

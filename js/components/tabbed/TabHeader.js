@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import constants from "../../constants";
+import { colors } from "../../constants";
 import SVGIcon from "../../svg/icons";
 
 const styles = StyleSheet.create({
@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   activeTab: {
-    borderBottomColor: constants.primary_color,
+    borderBottomColor: colors.primary_color,
     borderBottomWidth: 3
   },
   tabText: {
@@ -52,12 +52,12 @@ export default function TabHeader (props) {
           key={`tab_${index}`}
           >
             {tab.icon && <View style={styles.iconCont}>
-              <SVGIcon icon={tab.icon} fill={activeTab === tab.id ? constants.primary_color : '#939393'} />
+              <SVGIcon icon={tab.icon} fill={activeTab === tab.id ? colors.primary_color : '#939393'} />
             </View>}
             <Text 
             style={{
               ...styles.tabText,
-              color: activeTab === tab.id ? constants.primary_color : '#939393'
+              color: activeTab === tab.id ? colors.primary_color : '#939393'
             }} 
             >
               {tab.text}

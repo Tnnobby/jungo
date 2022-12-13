@@ -9,6 +9,13 @@ type HourMinuteTime = {
   minutes: number;
 };
 
+export type NutritionFacts = {
+  calories: number;
+  carbs: number;
+  fats: number;
+  protein: number;
+}
+
 export interface Recipe {
   created_at: FirebaseTimestamp;
   details: {
@@ -16,12 +23,7 @@ export interface Recipe {
     description: string;
     ingredients: string[];
     instructions: string[];
-    nutrition_facts: {
-      calories: number;
-      carbs: number;
-      fats: number;
-      protein: number;
-    };
+    nutrition_facts: NutritionFacts;
     photo: string;
     preptime: HourMinuteTime;
     preheat: number;

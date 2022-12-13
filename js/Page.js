@@ -169,7 +169,7 @@ export default function Page({
         transform: [{ translateX: translate.x }, { translateY: translate.y }],
         position: "absolute",
         // zIndex,
-        elevation: zIndex * 5,
+        // elevation: zIndex * 5,
         backgroundColor: "white",
         ...style,
       }}

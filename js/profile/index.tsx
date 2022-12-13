@@ -1,8 +1,8 @@
 import withUser from "../components/withUser";
 import ProfilePage from "./ProfilePage";
 
-export default function Profile () {
+export default function Profile (props) {
   const ProfileWithUser = withUser(ProfilePage)
 
-  return <ProfileWithUser />
+  return <ProfileWithUser {...props}/>
 }

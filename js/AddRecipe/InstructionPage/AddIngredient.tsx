@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import constants from "../../constants";
+import { Pressable, PressableProps, StyleSheet, Text, View } from "react-native";
 
 const styles = StyleSheet.create({
   main: {
@@ -20,19 +19,14 @@ const styles = StyleSheet.create({
   }
 })
 
-export default function AddIngredient ({onPress, props}) {
-  const [pressing, setPressing] = useState(false);
+interface AddIngredientProps extends PressableProps {
 
-  const handles = {
-    onPressIn: () => setPressing(true),
-    onPressOut: () => setPressing(false),
-    onPress: () => onPress()
-  }
+}
 
-  return (
-    <Pressable style={styles.main}  {...handles}>
+export const AddIngredient = ({ ...props }) => (
+    <Pressable style={styles.main}  {...props}>
       <Text style={styles.text}>+ </Text>
       <Text style={styles.text}>Ingredient</Text>
     </Pressable>
   )
-}
+

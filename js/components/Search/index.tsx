@@ -35,7 +35,6 @@ export default function Search ({placeholder = 'Apple Crisp', ...props}) {
       <View style={styles.iconCont}>
         <SearchIcon />
       </View>
-      
       <TextInput style={styles.input} placeholder={placeholder} {...props}/>
     </StatefulPressable>
   )

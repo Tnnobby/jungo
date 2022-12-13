@@ -83,11 +83,6 @@ export default function ProfileHeader({
     require(`../../assets/profile-pics/avatar-1.png`)
   );
 
-  useEffect(() => {
-    console.log(error);
-    console.log("assets:", assets);
-  }, [error, assets]);
-
   const onFollowPress = () => setFollowing(!following);
 
   const onNotificationPress = () => setNotifications(!notifications);

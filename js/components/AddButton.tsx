@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { shadows } from "../constants";
 import AddCircleFilled from "../svg/jsx/AddCircleFilled";
 import { AnimatedButton } from "./AnimatedButton";
 
@@ -22,7 +23,7 @@ export default function FloatingAddButton({ ...props }) {
     <AnimatedButton
       style={(state) => [
         styles.button,
-        state.pressed ? { elevation: 0 } : { elevation: 2 },
+        state.pressed ? shadows.elevation0 : shadows.elevation2,
       ]}
       {...props}
     >

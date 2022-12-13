@@ -7,6 +7,7 @@ import {
   Text,
   View,
   Image,
+  useWindowDimensions,
 } from "react-native";
 import { useFirebaseImage } from "../../api/useFirebaseImage";
 import ChefHat from "../../svg/jsx/ChefHat";
@@ -87,11 +88,13 @@ const DATA = {
 
 export default function FullSizeRecipeCard({
   data = DATA,
-  imageSize = Dimensions.get("screen").width - 40,
+  // imageSize = Dimensions.get("screen").width - 40,
   onPress,
   ...props
 }) {
   const { getImg, imgUrl } = useFirebaseImage();
+  const dimensions = useWindowDimensions()
+  const imageSize = dimensions.width - 40
 
   useEffect(() => {
     data.details.photo && getImg(data.details.photo);

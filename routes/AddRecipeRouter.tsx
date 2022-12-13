@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Platform } from "react-native";
+import { InstructionEditModal } from "../js/AddRecipe/edit-instruction-overlay";
 import InstructionPage from "../js/AddRecipe/InstructionPage";
 import NutritionDetailsBedsheet from "../js/AddRecipe/nutrition-bedsheet";
 import StartPage from "../js/AddRecipe/StartPage";
@@ -8,7 +9,11 @@ import TimerBedsheet from "../js/AddRecipe/timer-bedsheet";
 import { NutritionFacts } from "../js/api/firebase";
 import { RootPageProps } from "./routes";
 
-type BedsheetProps<T> = {
+export type BedsheetProps<T> = {
+  initialValue: T;
+};
+
+export type ModalProps<T> = {
   initialValue: T;
 };
 
@@ -18,6 +23,7 @@ export type AddRecipeStack = {
   "timer-bedsheet": BedsheetProps<{ hours: number; minutes: number }>;
   "nutrition-bedsheet": BedsheetProps<NutritionFacts>;
   "temperature-bedsheet": BedsheetProps<number>;
+  "instruction-modal": ModalProps<{ id: string; value: string }>;
 };
 
 const AddRecipe = createNativeStackNavigator<AddRecipeStack>();
@@ -66,6 +72,10 @@ export default function AddRecipeRouter({
         }}
       >
         {/* TODO : Edit Instructions */}
+        <AddRecipe.Screen
+          name="instruction-modal"
+          component={InstructionEditModal}
+        />
       </AddRecipe.Group>
     </AddRecipe.Navigator>
   );

@@ -1,25 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   Image,
   Keyboard,
   Pressable,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
+import { TextInput } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  selectRecipeFields,
   setNewRecipeField,
   setRecipeTitle,
 } from "../../redux/reducers/newRecipeReducer";
-import NutritionDetails from "../components/bedsheets/NutritionDetails";
-import Preheat from "../components/bedsheets/Preheat";
-import Timer from "../components/bedsheets/Timer";
+import { AddRecipePageProps } from "../../routes/routes";
+import { AnimatedButton } from "../components/AnimatedButton";
 import GeneralStyles from "../components/GeneralStyles";
-import constants from "../constants";
+import NavigationPage from "../components/NavigationPage";
+import { TextArea } from "../components/TextArea";
+import { colors, shadows } from "../constants";
 import useCamera from "../hooks/useCamera";
 import { useOverlay } from "../hooks/useOverlay";
 import Camera from "../svg/jsx/Camera";
@@ -27,12 +28,13 @@ import ChefHat from "../svg/jsx/ChefHat";
 import FireIcon from "../svg/jsx/FireIcon";
 import FlameIcon from "../svg/jsx/FlameIcon";
 import TimerIcon from "../svg/jsx/TimerIcon";
+import AddRecipeHeader from "./add-recipe-header";
 
 const styles = StyleSheet.create({
   startMain: {
     paddingTop: 30,
     paddingHorizontal: 20,
-    flexGrow: 1
+    flexGrow: 1,
   },
   titleRow: {
     flexDirection: "row",
@@ -76,7 +78,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
     marginTop: 15,
   },
   gsRowFront: {
@@ -128,58 +129,56 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   nextButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
     width: 125,
-    backgroundColor: constants.primary_color,
+    backgroundColor: colors.primary_color,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 8,
     borderRadius: 100,
-    elevation: 2,
+    ...shadows.elevation2
   },
   nextButtonText: {
     fontFamily: "Rubik_500",
     fontSize: 20,
     color: "white",
   },
+  body: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
 });
 
-export default function StartPage({
-  preheat,
-  cooktime,
-  preptime,
-  nutrition_facts,
-  nextPage,
-  title,
-  photo,
-  ...props
-}) {
+type StartPageProps = AddRecipePageProps<"pageone">;
+
+export default function StartPage({ navigation, route }: StartPageProps) {
   const dispatch = useDispatch();
-  const { state: cameraState, photos: cameraPhotos } = useSelector(
-    (s) => s.camera
-  );
+  const { preheat, cooktime, preptime, nutrition_facts, title, photo } =
+    useSelector(selectRecipeFields);
   const [cameraPressing, setCameraPressing] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [keyboardUp, setKeyboardUp] = useState(false);
   const keyboardOffset = useRef(new Animated.Value(0)).current;
   const xOffset = useRef(new Animated.Value(0)).current;
-  const descriptionRef = useRef();
+  const descriptionRef = useRef<TextInput>(null);
   const { setBedsheet, valueRef } = useOverlay();
-  const camera = useCamera()
+  const camera = useCamera();
 
   const triggerKeyboardOffset = () => {
     const _show = Keyboard.addListener("keyboardDidShow", (e) => {
       Animated.spring(keyboardOffset, {
         toValue: -e.endCoordinates.height + 20,
         useNativeDriver: true,
-      }).start(_show.remove());
+      }).start(() => _show.remove());
     });
     const _hide = Keyboard.addListener("keyboardDidHide", (e) => {
       Animated.spring(keyboardOffset, {
         toValue: 0,
         useNativeDriver: true,
-      }).start(() => {
-        _hide.remove();
-      });
+      }).start(() => _hide.remove());
     });
   };
 
@@ -197,71 +196,37 @@ export default function StartPage({
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (cameraState === "idle" && cameraOpen) {
-  //     cameraPhotos.length > 0 &&
-  //       dispatch(setNewRecipeField({ photo: cameraPhotos }));
-  //     setCameraOpen(false);
-  //   }
-  // }, [cameraState]);
-
   const cameraPress = () => {
     setCameraOpen(true);
     camera.open({
       onClose: () => {
-        setCameraOpen(false)
-        setPhoto()
-      }
-    })
+        setCameraOpen(false);
+        setPhoto();
+      },
+    });
   };
   const cameraPressIn = () => setCameraPressing(true);
   const cameraPressOut = () => setCameraPressing(false);
 
   const preheatActionTrigger = () =>
-    setBedsheet({
-      element: <Preheat />,
-      initialValue: preheat || 350,
-      onClose: () => setValue("preheat"),
-    });
+    navigation.navigate("temperature-bedsheet", { initialValue: preheat });
 
-  const cookTimeActionTrigger = () => {
-    setBedsheet({
-      element: <Timer />,
-      initialValue: cooktime,
-      onClose: () => setValue('cooktime')
-    })
-  }
+  const cookTimeActionTrigger = () =>
+    navigation.navigate("timer-bedsheet", { initialValue: cooktime });
 
-  // const cookTimeActionTrigger = () =>
-  //   openOverlay({ overlay: "timer", id: "cooktime", value: cooktime });
-  const prepTimeActionTrigger = () => {
-    setBedsheet({
-      element: <Timer />,
-      initialValue: preptime,
-      onClose: () => setValue('preptime')
-    })
-  }
-
-  // const prepTimeActionTrigger = () =>
-  //   openOverlay({ overlay: "timer", id: "preptime", value: preptime });
+  const prepTimeActionTrigger = () =>
+    navigation.navigate("timer-bedsheet", { initialValue: preptime });
 
   const caloriesActionTrigger = () =>
-    setBedsheet({
-      element: <NutritionDetails />,
+    navigation.navigate("nutrition-bedsheet", {
       initialValue: nutrition_facts,
-      onClose: () => setValue('nutrition_facts')
     });
 
-  const setValue = (field) => {
-    console.log("setting value to:", valueRef.current);
-    dispatch(setNewRecipeField({ [field]: valueRef.current }));
-  };
   const setPhoto = () => {
-    console.log("setting photo to:", camera.pictures.current)
-    dispatch(setNewRecipeField({photo: camera.pictures.current}))
-  }
+    console.log("setting photo to:", camera.pictures.current);
+    dispatch(setNewRecipeField({ photo: camera.pictures.current }));
+  };
 
-  const descriptionPressHandle = () => descriptionRef.current.focus();
 
   const nextHandle = () => {
     if (keyboardUp) {
@@ -276,17 +241,7 @@ export default function StartPage({
     } else goNext();
   };
 
-  const goNext = () => {
-    nextPage(
-      new Promise((resolve, reject) => {
-        Animated.timing(xOffset, {
-          toValue: -Dimensions.get("screen").width,
-          duration: 250,
-          useNativeDriver: true,
-        }).start(() => resolve(true));
-      })
-    );
-  };
+  const goNext = () => navigation.navigate("pagetwo");
   const updateTitle = (ev) => dispatch(setRecipeTitle(ev.nativeEvent.text));
 
   const items = [
@@ -331,98 +286,98 @@ export default function StartPage({
   ];
 
   return (
-    <Animated.View
-      style={{
-        ...styles.startMain,
-        transform: [{ translateY: keyboardOffset }, { translateX: xOffset }],
-      }}
-    >
-      {/* TITLE ROW */}
-      <View style={styles.titleRow}>
-        <Pressable
-          style={{
-            ...styles.photoPressable,
-            backgroundColor: cameraPressing ? "#cecece" : "#E0E0E0",
-          }}
-          onPressIn={cameraPressIn}
-          onPressOut={cameraPressOut}
-          onPress={cameraPress}
-        >
-          {photo.length < 1 ? (
-            <Camera /* Camera Icon */ />
-          ) : (
-            <Image source={{ ...photo[0], width: "100%", height: "100%" }} />
-          )}
-        </Pressable>
-        <View style={styles.titleColumn}>
-          <TextInput
-            style={styles.titleInput}
-            placeholder="Title"
-            defaultValue={title}
-            showSoftInputOnFocus={true}
-            multiline={false}
-            onEndEditing={updateTitle}
-          />
-          <Pressable style={styles.tagPressable}>
-            <Text style={styles.tagText}></Text>
+    <NavigationPage>
+      <AddRecipeHeader />
+      <View style={styles.body}>
+        {/* TITLE ROW */}
+        <View style={styles.titleRow}>
+          <Pressable
+            style={{
+              ...styles.photoPressable,
+              backgroundColor: cameraPressing ? "#cecece" : "#E0E0E0",
+            }}
+            onPressIn={cameraPressIn}
+            onPressOut={cameraPressOut}
+            onPress={cameraPress}
+          >
+            {photo.length < 1 ? (
+              <Camera /* Camera Icon */ />
+            ) : (
+              <Image source={{ ...photo[0], width: "100%", height: "100%" }} />
+            )}
           </Pressable>
+          <View style={styles.titleColumn}>
+            <TextInput
+              style={styles.titleInput}
+              placeholder="Title"
+              defaultValue={title}
+              showSoftInputOnFocus={true}
+              multiline={false}
+              onEndEditing={updateTitle}
+            />
+            <Pressable style={styles.tagPressable}>
+              <Text style={styles.tagText}></Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-      {/* END OF TITLE ROW */}
-      {/* GETTING STARTED SECTION */}
-      <View style={styles.gettingStartedContainer}>
-        <Text style={{ ...GeneralStyles.header, color: "#498CF7" }}>
-          Getting Started
-        </Text>
+        {/* END OF TITLE ROW */}
+        {/* GETTING STARTED SECTION */}
+        <View style={styles.gettingStartedContainer}>
+          <Text style={{ ...GeneralStyles.header, color: "#498CF7" }}>
+            Getting Started
+          </Text>
 
-        {/* Preheat Oven */}
-        <View style={styles.gsRowContainer}>
-          {items.map((item, index) => {
-            return (
-              <View key={`row_${index}`} style={styles.gsRow}>
-                <View style={styles.gsRowFront}>
-                  <View style={styles.gsIconBack}>{item.icon}</View>
-                  <Text style={styles.gsRowText}>{item.title}</Text>
+          {/* Preheat Oven */}
+          <View style={styles.gsRowContainer}>
+            {items.map((item, index) => {
+              return (
+                <View key={`row_${index}`} style={styles.gsRow}>
+                  <View style={styles.gsRowFront}>
+                    <View style={styles.gsIconBack}>{item.icon}</View>
+                    <Text style={styles.gsRowText}>{item.title}</Text>
+                  </View>
+                  <View style={styles.gsRowBack}>
+                    <Pressable
+                      style={styles.gsAction}
+                      onPress={item.triggerHandle}
+                    >
+                      {item.item_value}
+                    </Pressable>
+                  </View>
                 </View>
-                <View style={styles.gsRowBack}>
-                  <Pressable
-                    style={styles.gsAction}
-                    onPress={item.triggerHandle}
-                  >
-                    {item.item_value}
-                  </Pressable>
-                </View>
-              </View>
-            );
-          })}
+              );
+            })}
+          </View>
         </View>
-      </View>
-      {/* DESCRIPTION SECTION */}
-      <Text
-        style={{
-          ...GeneralStyles.header,
-          color: "#498CF7",
-          marginVertical: 20,
-        }}
-      >
-        Description
-      </Text>
-      <Pressable
-        style={styles.descriptionInput}
-        onPress={descriptionPressHandle}
-      >
-        <TextInput
+        {/* DESCRIPTION SECTION */}
+        <Text
+          style={{
+            ...GeneralStyles.header,
+            color: "#498CF7",
+            marginVertical: 20,
+          }}
+        >
+          Description
+        </Text>
+        <TextArea 
           placeholder="Enter Description"
           multiline={true}
-          onFocus={triggerKeyboardOffset}
           ref={descriptionRef}
         />
-      </Pressable>
-      <View style={styles.nextContainer}>
-        <Pressable style={styles.nextButton} onPress={nextHandle}>
-          <Text style={styles.nextButtonText}>Next</Text>
-        </Pressable>
       </View>
-    </Animated.View>
+      <AnimatedButton
+        style={(state) => {
+          return !state.pressed
+            ? styles.nextButton
+            : {
+                ...styles.nextButton,
+                ...shadows.elevation0,
+              };
+        }}
+        onPress={nextHandle}
+      >
+        <Text style={styles.nextButtonText}>Next</Text>
+      </AnimatedButton>
+    </NavigationPage>
   );
 }

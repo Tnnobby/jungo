@@ -2,7 +2,7 @@ import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import * as Device from 'expo-device';
-import ActionRow from "./ActionRow";
+import ActionRow from "../Bedsheet/ActionRow";
 
 const styles = StyleSheet.create({
   body: {

@@ -23,6 +23,7 @@ export default function SwipeableItem({
   closed,
 }: SwipeableItemProps) {
   const [layout, setLayout] = useState<LayoutRectangle>(null);
+  const [loaded, setLoaded] = useState<boolean>(false)
   const leftButtonLayout = useSharedValue<LayoutRectangle>(null);
   const rightButtonLayout = useSharedValue<LayoutRectangle>(null);
   const xOffset = useSharedValue<number>(0);
@@ -63,10 +64,11 @@ export default function SwipeableItem({
           }
           if (
             Boolean(rightButtonLayout.value) &&
+            Boolean(layout) &&
             ev.translationX + xOffset.value + layout.width <
               rightButtonLayout.value.x
           ) {
-            xOffset.value = -rightButtonLayout.value.width
+            xOffset.value = -rightButtonLayout.value.width;
             return;
           }
           offset.value = withSpring(0, { mass: 0.5 });
@@ -102,8 +104,12 @@ export default function SwipeableItem({
     rightButtonLayout.value = ev.nativeEvent.layout;
   };
 
+  useEffect(() => {
+    setLoaded(true)
+  }, [])
+
   return (
-    <Animated.View entering={SlideInLeft} exiting={SlideInRight}>
+    <Animated.View entering={loaded ? SlideInLeft : undefined } exiting={SlideInRight}>
       {layout && (
         <Animated.View
           style={

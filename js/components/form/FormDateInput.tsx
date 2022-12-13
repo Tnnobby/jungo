@@ -1,6 +1,16 @@
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
-import { Pressable, StyleSheet, Text, View, Platform, Keyboard } from "react-native";
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+  Keyboard,
+} from "react-native";
+import { useLoginContext } from "../../context-providers/LoginContextType";
+import { LoginStack } from "../../../routes/LoginRouter";
 import { useOverlay } from "../../hooks/useOverlay";
 import { DatePicker } from "../bedsheets/DatePicker";
 
@@ -41,24 +51,33 @@ const MONTHS = {
   11: "December",
 };
 
+interface FormDateInputProps {
+  onChange?: (value: Date) => void;
+  value?: Date;
+  placeholder?: Date;
+}
+
+// TODO : fix this up, find out if date is necessary and probably lift state up if possible
 export default function FormDateInput({
   onChange,
-  date: initialDate,
+  value,
   placeholder,
-  ...props
-}) {
+}: FormDateInputProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [date, setDate] = useState(initialDate);
-  const { setBedsheet } = useOverlay();
+  const navigation = useNavigation<NavigationProp<LoginStack>>();
+
   const pressHandle = () => {
-    Keyboard.dismiss()
-    setIsOpen(true);
+    Keyboard.dismiss();
+    Platform.OS === "ios"
+      ? navigation.navigate("date-bedsheet", {
+          initialValue: value || placeholder,
+        })
+      : setIsOpen(true);
   };
 
   const androidChangeHandle = (_, val) => {
     setIsOpen(false);
     onChange && onChange(val);
-    setDate(val);
   };
 
   const formatDate = (date) => {
@@ -67,34 +86,21 @@ export default function FormDateInput({
     } ${date.getDate()}, ${date.getFullYear()}`;
   };
 
-  /* IOS Implementation */
   useEffect(() => {
-    if (isOpen && Platform.OS === "ios") {
-      setBedsheet({
-        element: <DatePicker onClose={() => setIsOpen(false)} />,
-        onChange: (val) => {
-          onChange && onChange(val)
-          setDate(val)
-        }
-      });
-    }
-  }, [isOpen]);
+    console.log(value);
+  }, [value]);
 
   return (
     <>
       <Pressable style={styles.main} onPress={pressHandle}>
-        <Text
-          style={
-            date === initialDate ? styles.placeholderStyle : styles.dateStyle
-          }
-        >
-          {date === initialDate ? formatDate(placeholder) : formatDate(date)}
+        <Text style={!value ? styles.placeholderStyle : styles.dateStyle}>
+          {!value ? formatDate(placeholder) : formatDate(value)}
         </Text>
       </Pressable>
       {Platform.OS !== "ios" && isOpen && (
         <RNDateTimePicker
           accentColor="#00B700"
-          value={date || placeholder}
+          value={value || placeholder}
           onChange={androidChangeHandle}
         />
       )}

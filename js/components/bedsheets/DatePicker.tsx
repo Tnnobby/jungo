@@ -3,46 +3,45 @@ import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
 import { StyleSheet, View } from "react-native";
-import ActionRow from "./ActionRow";
+import ActionRow from "../Bedsheet/ActionRow";
+import { LoginPageProps } from "../../../routes/routes";
+import { Bedsheet, BedsheetRef } from "../Bedsheet/bedsheet";
+import { useLoginContext } from "../../context-providers/LoginContextType";
 
 const styles = StyleSheet.create({
   main: {},
 });
 
-export interface DatePickerProps {
-  close?: () => void;
-  onChange?: (val: Date) => void;
-  initialValue?: Date;
-  onClose?: () => void;
-}
+// export interface DatePickerProps {
+//   close?: () => void;
+//   onChange?: (val: Date) => void;
+//   initialValue?: Date;
+//   onClose?: () => void;
+// }
 
-export function DatePicker({
-  close,
-  onChange,
-  initialValue = new Date(),
-  onClose,
-  ...props
-}: DatePickerProps) {
+type DatePickerProps = LoginPageProps<"date-bedsheet">;
+
+export const DatePicker: React.FC<DatePickerProps> = ({
+  route,
+}) => {
+  const { initialValue } = route.params;
   const val = useRef<Date>(initialValue);
+  const { setBirthday } = useLoginContext();
+  const bedsheetRef = useRef<BedsheetRef>();
 
   const changeHandle = (_: DateTimePickerEvent, date: Date) => {
-    console.log(date);
     val.current = date;
   };
 
   const doneHandle = () => {
-    onChange && onChange(val.current);
-    onClose && onClose();
-    close();
+    setBirthday(val.current);
+    bedsheetRef.current.close();
   };
 
-  const cancelHandle = () => {
-    onClose && onClose();
-    close();
-  };
+  const cancelHandle = () => bedsheetRef.current.close();
 
   return (
-    <View style={{ height: "100%", width: "100%" }}>
+    <Bedsheet ref={bedsheetRef}>
       <RNDateTimePicker
         value={initialValue}
         onChange={changeHandle}
@@ -50,7 +49,7 @@ export function DatePicker({
         display={"spinner"}
         style={styles.main}
       />
-      <ActionRow cancelHandle={cancelHandle} doneHandle={doneHandle} />
-    </View>
+      <ActionRow onCancel={cancelHandle} onDone={doneHandle} />
+    </Bedsheet>
   );
-}
+};

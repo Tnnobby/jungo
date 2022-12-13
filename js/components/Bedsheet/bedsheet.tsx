@@ -21,6 +21,7 @@ import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
   Easing,
   min,
+  runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
@@ -62,7 +63,6 @@ export const Bedsheet = forwardRef<BedsheetRef, BedsheetProps>(
           .onBegin((ev) => {})
           .onChange((ev) => {
             if (!bedsheetLayout) return;
-            console.log(ev.translationY);
 
             yOffset.value = ev.translationY;
           })
@@ -79,15 +79,23 @@ export const Bedsheet = forwardRef<BedsheetRef, BedsheetProps>(
 
     //#region declare custom ref values
     const open = (cb?: () => void) => {
-      yOffset.value = withTiming(0, { duration: 250, easing: Easing.ease });
-      cb && setTimeout(cb, 250);
+      yOffset.value = withSpring(
+        0,
+        {overshootClamping: true, mass: 0.15},
+        (finished) => finished && cb && runOnJS(cb)()
+      );
     };
-    const close = (cb?: () => void, options?: CloseOptions) => {
-      yOffset.value = withTiming(dimensions.height, {
-        duration: 250,
-        easing: Easing.ease,
-      });
-      setTimeout(cb, 250);
+    const close = (cb?: () => void) => {
+      yOffset.value = withSpring(
+        dimensions.height,
+        {
+          overshootClamping: true,
+          mass: 0.6
+        },
+        (finished) => {
+          finished && cb && runOnJS(cb)();
+        }
+      );
     };
     useImperativeHandle(ref, () => ({
       open,
@@ -151,7 +159,7 @@ export const Bedsheet = forwardRef<BedsheetRef, BedsheetProps>(
 const styles = StyleSheet.create({
   main: {
     position: "relative",
-    flex: 1
+    flex: 1,
   },
   backdrop: {
     height: "100%",

@@ -1,13 +1,15 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   NativeSyntheticEvent,
   StyleSheet,
   TextInputFocusEventData,
-  Pressable,
   Text,
+  Pressable,
+  View,
 } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { Gesture, GestureDetector, TextInput } from "react-native-gesture-handler";
+import { runOnJS } from "react-native-reanimated";
 import SwipeableItem from "../../components/Swipeable";
 import DeleteIcon from "../../svg/jsx/DeleteIcon";
 
@@ -25,28 +27,36 @@ export default function IngredientItem({
   const inputRef = useRef<TextInput>();
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const editTrigger = () => {
-    console.log("edit");
-    inputRef.current.focus();
-  };
+  const focus = () => {
+    console.log('editing');
+    setIsEditing(true)
+    inputRef.current.focus()
+  }
 
-  console.log(value);
+  const tapGesture = Gesture.Tap()
+    .maxDelay(100)
+    .onStart((ev) => {
+      runOnJS(focus)()
+    })
 
   return (
     <SwipeableItem rightElement={<DeleteButton />}>
-      <Pressable style={styles.pressableInput} onPress={editTrigger}>
-        <TextInput
-          style={
-            isEditing ? { ...styles.input, ...styles.focus } : styles.input
-          }
-          ref={inputRef}
-          selectionColor="black"
-          defaultValue={value}
-          editable={isEditing}
-          onChangeText={inputChangeHandle}
-          onFocus={inputFocusHandle}
-        />
-      </Pressable>
+      <GestureDetector gesture={tapGesture}>
+        <View style={styles.pressableInput}>
+          <TextInput
+            style={
+              isEditing ? { ...styles.input, ...styles.focus } : styles.input
+            }
+            ref={inputRef}
+            selectionColor="black"
+            defaultValue={value}
+            onChangeText={inputChangeHandle}
+            onFocus={inputFocusHandle}
+            editable={isEditing}
+            onBlur={() => setIsEditing(false)}
+          />
+        </View>
+      </GestureDetector>
     </SwipeableItem>
   );
 }
@@ -83,11 +93,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   focus: {
-    borderBottomColor: "#383838",
+    borderBottomColor: "white",
     borderBottomWidth: 1,
     marginVertical: 3,
   },
-  pressableInput: { width: "100%", backgroundColor: "white" },
+  pressableInput: {
+    width: "100%",
+    backgroundColor: "white",
+    paddingVertical: 4,
+  },
   // Delete Styles
   backdrop: {
     position: "absolute",

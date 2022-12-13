@@ -6,8 +6,9 @@ import useFirebaseRecipes from "../../hooks/useFirebaseRecipes";
 import useOverlay from "../../api/useOverlay";
 import ViewRecipe from "./ViewRecipe";
 import { RecipeData } from "../../types/RecipeTypes";
-import { RootPageProps } from "../../../routes/RootRouter";
 import NavigationPage from "../NavigationPage";
+import { RootPageProps } from "../../../routes/routes";
+import { useEffect } from "react";
 
 const styles = StyleSheet.create({
   main: {
@@ -55,6 +56,10 @@ export default function SearchOverlay({
       },
     });
   };
+
+  useEffect(() => {
+    console.log(recipes)
+  }, [recipes])
 
   return (
     <NavigationPage>

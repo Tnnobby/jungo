@@ -1,8 +1,10 @@
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import {
   StyleSheet,
   Pressable,
   Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import {
   SafeAreaView,
@@ -11,37 +13,38 @@ import {
 
 interface NavigationPageProps extends SafeAreaViewProps {
   statusBarColor?: string;
+  keyboardSafe?: boolean;
 }
 
 export default function NavigationPage({
   children,
   statusBarColor,
   style,
+  keyboardSafe = true,
   ...props
 }: NavigationPageProps) {
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
 
+  useEffect(() => {
+    // Keyboard.addListener('keyboardDidShow', (ev) => {
+    // })
+  }, []);
+
   return (
-    <SafeAreaView style={[{backgroundColor: 'white'}, style, { flex: 1 }]} {...props}>
+    <SafeAreaView
+      style={[{ backgroundColor: "white" }, { flex: 1 }]}
+      {...props}
+    >
       <StatusBar backgroundColor={statusBarColor || "white"} />
-      <Pressable
-        style={{ flex: 1 }}
-        onPress={dismissKeyboard}
-        onLayout={(ev) =>
-          console.log("NavigationPage>Pressable:", ev.nativeEvent.layout)
-        }
-      >
-        {children}
-      </Pressable>
+      {keyboardSafe ? (
+        <Pressable style={[{ flex: 1 }, style]} onPress={dismissKeyboard}>
+          {children}
+        </Pressable>
+      ) : (
+        children
+      )}
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    overflow: "hidden",
-  },
-});
