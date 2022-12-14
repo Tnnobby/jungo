@@ -1,4 +1,4 @@
-import RNDateTimePicker from "@react-native-community/datetimepicker";
+import RNDateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import {
@@ -64,21 +64,15 @@ export default function FormDateInput({
   placeholder,
 }: FormDateInputProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const navigation = useNavigation<NavigationProp<LoginStack>>();
 
   const pressHandle = () => {
     Keyboard.dismiss();
-    Platform.OS === "ios"
-      ? navigation.navigate("date-bedsheet", {
-          initialValue: value || placeholder,
-        })
-      : setIsOpen(true);
+    setIsOpen(true);
   };
 
-  const androidChangeHandle = (_, val) => {
-    setIsOpen(false);
-    onChange && onChange(val);
-  };
+  const setDateHandle = (ev: DateTimePickerEvent, date: Date) => {
+    
+  }
 
   const formatDate = (date) => {
     return `${
@@ -92,17 +86,31 @@ export default function FormDateInput({
 
   return (
     <>
-      <Pressable style={styles.main} onPress={pressHandle}>
-        <Text style={!value ? styles.placeholderStyle : styles.dateStyle}>
-          {!value ? formatDate(placeholder) : formatDate(value)}
-        </Text>
-      </Pressable>
-      {Platform.OS !== "ios" && isOpen && (
-        <RNDateTimePicker
-          accentColor="#00B700"
-          value={value || placeholder}
-          onChange={androidChangeHandle}
-        />
+      {Platform.OS === "ios" ? (
+        <View style={{justifyContent: 'flex-start', alignItems: 'flex-start', width: '100%'}}>
+          <RNDateTimePicker
+            style={{minWidth: 130, maxWidth: 200}}
+            accentColor="#00B700"
+            value={value || placeholder}
+            onChange={setDateHandle}
+            onLayout={(ev) => console.log(ev.nativeEvent.layout)}
+          />
+        </View>
+      ) : (
+        <>
+          <Pressable style={styles.main} onPress={pressHandle}>
+            <Text style={!value ? styles.placeholderStyle : styles.dateStyle}>
+              {!value ? formatDate(placeholder) : formatDate(value)}
+            </Text>
+          </Pressable>
+          {isOpen && (
+            <RNDateTimePicker
+              accentColor="#00B700"
+              value={value || placeholder}
+              onChange={setDateHandle}
+            />
+          )}
+        </>
       )}
     </>
   );
