@@ -11,13 +11,13 @@ const JungoWrappers = ({ children }: { children: React.ReactNode }) => {
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <ErrorHandler>
-          <LoadingHandler>
-            <SafeAreaProvider>
+        <SafeAreaProvider>
+          <ErrorHandler>
+            <LoadingHandler>
               <FirebaseWrapper>{children}</FirebaseWrapper>
-            </SafeAreaProvider>
-          </LoadingHandler>
-        </ErrorHandler>
+            </LoadingHandler>
+          </ErrorHandler>
+        </SafeAreaProvider>
       </GestureHandlerRootView>
     </Provider>
   );

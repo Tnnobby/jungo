@@ -17,7 +17,7 @@ import firebaseConfig from "../../firebase.config";
 import { FirebaseContext } from "../context-providers/FirebaseProvider";
 
 export default function useAuth() {
-  const { auth, db } = useContext(FirebaseContext)
+  const { auth, db, actions } = useContext(FirebaseContext);
 
   /**
    * @param {{method:'email' | null, email?: string, password?: string}} param0 email and password required for email method
@@ -41,7 +41,7 @@ export default function useAuth() {
         case "email":
           signInWithEmailAndPassword(auth, email, password)
             .then(() => {
-              resolve(true)
+              resolve(true);
             })
             .catch((reason) => {
               reject(reason);
@@ -55,16 +55,20 @@ export default function useAuth() {
 
   const createUserDoc = async ({ uid, data }) => {
     return new Promise((resolve, reject) => {
-      setDoc(doc(db, "users", uid), {
+      const userDoc = {
         ...data,
         created_at: Timestamp.now(),
-        birthday: Timestamp.fromDate(data.birthday)
-      })
-        .then((res) => resolve({
-        ...data,
-        created_at: Timestamp.now().seconds,
-        birthday: Timestamp.fromDate(data.birthday).seconds
-      }))
+        birthday: Timestamp.fromDate(data.birthday),
+      };
+      // FIXME : Currently dispatching userdoc right after it is created, maybe not a good place to handle this, think of a better place to put this.
+      setDoc(doc(db, "users", uid), userDoc)
+        .then(() => {
+          actions.dispatchUser({
+            type: "FETCH_USER_DOC_SUCCESS",
+            doc: userDoc,
+          });
+          resolve(userDoc);
+        })
         .catch((reason) => reject(reason));
     });
   };

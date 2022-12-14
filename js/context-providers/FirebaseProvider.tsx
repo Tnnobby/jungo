@@ -10,10 +10,18 @@ import {
 import { FirebaseStorage, getStorage } from "firebase/storage";
 import { createContext, useRef, useEffect, useState, useReducer } from "react";
 import firebaseConfig from "../../firebase.config";
+import { useAlert } from "../hooks/useAlert";
 
 interface ProviderProps {
   children?: React.ReactNode;
 }
+
+type FirebaseActions = {
+  logout: () => void;
+  dispatchUser: React.Dispatch<UserAction>;
+  addListener: AddListenerFunction<ListenerTypes>;
+  removeListener: (id: number) => boolean;
+};
 
 export interface FirebaseContextType {
   auth: Auth;
@@ -38,29 +46,31 @@ export interface JungoUser extends Partial<User> {
   fetchingDoc?: boolean;
 }
 
-type FirebaseActions = {
-  logout: () => void;
+type UserAction = {
+  type:
+    | "FETCH_USER_DOC_START"
+    | "FETCH_USER_DOC_SUCCESS"
+    | "FETCH_USER_DOC_ERROR"
+    | "SET_USER"
+    | "LOG_OUT_USER";
+  doc?: UserDoc;
+  user?: User;
 };
+
+type UserReducer = (state: JungoUser, action: UserAction) => JungoUser;
 
 export const FirebaseContext = createContext<FirebaseContextType>({
   auth: null,
   db: null,
   user: null,
   storage: null,
-  actions: { logout: () => null },
+  actions: {
+    logout: () => null,
+    dispatchUser: null,
+    addListener: () => null,
+    removeListener: () => null,
+  },
 });
-
-type UserAction = {
-  type:
-    | "FETCH_USER_DOC_START"
-    | "FETCH_USER_DOC_SUCCESS"
-    | "FETCH_USER_DOC_ERROR"
-    | "SET_USER";
-  doc?: UserDoc;
-  user?: User;
-};
-
-type UserReducer = (state: JungoUser, action: UserAction) => JungoUser;
 
 const userReducer: UserReducer = (state, action) => {
   switch (action.type) {
@@ -81,18 +91,35 @@ const userReducer: UserReducer = (state, action) => {
         ...state,
         fetchingDoc: false,
       };
-    case "SET_USER": {
+    case "SET_USER":
       return {
         ...state,
         ...action.user,
         doc: null,
         hasDoc: false,
       };
-    }
+
+    case "LOG_OUT_USER":
+      return initialState;
+
     default:
       return state;
   }
 };
+
+type ListenerMap = {
+  DONE_FETCHING: (result: boolean) => void;
+};
+type ListenerTypes = keyof ListenerMap;
+type Listener<L extends ListenerTypes> = { type: L; cb: ListenerMap[L] };
+type ListenerList = Listener<ListenerTypes>[];
+type ListenerReturnType = {
+  remove: () => void;
+};
+type AddListenerFunction<T extends ListenerTypes> = (
+  type: T,
+  cb: ListenerMap[T]
+) => ListenerReturnType;
 
 const initialState: JungoUser = {};
 
@@ -107,6 +134,8 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
     userReducer,
     initialState
   );
+  const listeners = useRef<ListenerList>([]);
+  const { alert } = useAlert();
 
   useEffect(() => {
     if (user?.uid) {
@@ -121,6 +150,14 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
         });
     }
   }, [user?.uid]);
+
+  useEffect(() => {
+    if (!user.fetchingDoc) {
+      listeners.current.forEach((val) => {
+        if (val.type === "DONE_FETCHING") val.cb(user.hasDoc);
+      });
+    }
+  }, [user?.fetchingDoc]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((_user) => {
@@ -149,8 +186,26 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
 
   const logout = () => {
     signOut(auth).then((val) => {
-      
-    })
+      dispatchUser({ type: "LOG_OUT_USER" });
+      alert({ message: "Successfully Logged Out!" });
+    });
+  };
+
+  const addListener = <T extends ListenerTypes>(
+    type: T,
+    cb: ListenerMap[T]
+  ): { remove: () => void } => {
+    const id = listeners.current.length + 1;
+    listeners.current = [...listeners.current, { type, cb }];
+    return {
+      remove: () =>
+        (listeners.current = listeners.current.filter(
+          (value, index) => index !== id
+        )),
+    };
+  };
+  const removeListener = (id: number) => {
+    return true;
   };
 
   return (
@@ -161,8 +216,11 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
         user,
         storage,
         actions: {
-          logout
-        }
+          logout,
+          dispatchUser,
+          addListener,
+          removeListener,
+        },
       }}
     >
       {children}

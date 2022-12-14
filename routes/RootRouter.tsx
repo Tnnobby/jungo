@@ -40,20 +40,25 @@ export default function NavigationRouter() {
         }}
         initialRouteName="login"
       >
-        <Stack.Screen name="login" component={LoginRouter} />
-        <Stack.Screen name="home" component={FeedPage} />
-        <Stack.Screen name="profile" component={Profile} />
-        <Stack.Screen name="add-recipe" component={AddRecipeRouter} />
-        <Stack.Group
-          screenOptions={{
-            presentation: "fullScreenModal",
-            gestureEnabled: true,
-            gestureDirection: "vertical",
-          }}
-        >
-          <Stack.Screen name="search" component={SearchOverlay} />
-          <Stack.Screen name="view-recipe" component={ViewRecipe} />
-        </Stack.Group>
+        {!user?.hasDoc ? (
+          <Stack.Screen name="login" component={LoginRouter} />
+        ) : (
+          <>
+            <Stack.Screen name="home" component={FeedPage} />
+            <Stack.Screen name="profile" component={Profile} />
+            <Stack.Screen name="add-recipe" component={AddRecipeRouter} />
+            <Stack.Group
+              screenOptions={{
+                presentation: "fullScreenModal",
+                gestureEnabled: true,
+                gestureDirection: "vertical",
+              }}
+            >
+              <Stack.Screen name="search" component={SearchOverlay} />
+              <Stack.Screen name="view-recipe" component={ViewRecipe} />
+            </Stack.Group>
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

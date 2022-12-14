@@ -22,6 +22,4 @@ export default function LoadingHandler ({children}: {children?: React.ReactNode}
       {children}
     </LoadingContext.Provider>
   )
-
-
 }

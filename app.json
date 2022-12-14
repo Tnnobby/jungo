@@ -27,10 +27,17 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.tnnobby.jungo",
-      "permissions": ["CAMERA"]
+      "permissions": [
+        "CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "eb484d2f-19be-4412-8b17-1aa11f35e3f5"
+      }
     }
   }
 }
