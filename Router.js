@@ -1,6 +1,5 @@
 import AddRecipe from "./js/AddRecipe";
 import Preheat from "./js/components/bedsheets/Preheat";
-import Timer from "./js/components/bedsheets/Timer.old";
 import Profile from "./js/profile";
 import InstructionEdit from "./js/components/fullpage/InstructionEdit";
 import NutritionDetails from "./js/components/bedsheets/NutritionDetails";
