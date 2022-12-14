@@ -145,8 +145,6 @@ const UserInfoPage: React.FC<UserInfoPageProps> = ({ navigation, route }) => {
 
   const { createUserDoc } = useAuth();
   const loading = useLoading();
-  const dispatch = useDispatch();
-  console.log("In UserInfoPage");
 
   const placeholderDate: () => Date = () => {
     const _d = new Date();
@@ -171,27 +169,14 @@ const UserInfoPage: React.FC<UserInfoPageProps> = ({ navigation, route }) => {
       },
     };
     createUserDoc(_data)
-      .then((val) => {
+      .then(() => {
         loading.close();
-        console.log({
-          ..._data,
-          ...val,
-        });
-        dispatch(
-          setUserInfo({
-            ...user,
-            ...val,
-          })
-        );
         navigation.getParent().navigate("home");
       })
       .catch((error) => {
         console.error(error);
         loading.close();
       });
-  };
-  const layoutHandle = (val) => {
-    console.log(val.nativeEvent.layout);
   };
 
   const backHandle = () => navigation.goBack();
