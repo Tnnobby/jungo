@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "jungo",
-    "slug": "jungo",
+    "name": "Jungo App",
+    "slug": "Jungo App",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -19,14 +19,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tnnobby.jungo"
+      "bundleIdentifier": "co.jungoapp.jungo-fresh"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.tnnobby.jungo",
+      "package": "co.jungoapp.jungo-fresh",
       "permissions": ["CAMERA"]
     },
     "web": {
