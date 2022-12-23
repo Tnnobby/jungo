@@ -3,6 +3,7 @@
     "name": "Jungo App",
     "slug": "JungoApp",
     "version": "1.0.0",
+    "expo.ios.buildNumber": "2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
