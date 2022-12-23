@@ -1,23 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import { NavigationProp } from "@react-navigation/native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { NestableScrollContainer } from "react-native-draggable-flatlist/lib/components/NestableScrollContainer";
+import { useDispatch, useSelector } from "react-redux";
 import {
-  Animated,
-  Dimensions,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import { useSelector } from "react-redux";
-import { selectIngredients } from "../../../redux/reducers/newRecipeReducer";
+  selectRecipeFields,
+} from "../../../redux/reducers/newRecipeReducer";
+import { RootStack } from "../../../routes/RootRouter";
 import { AddRecipePageProps } from "../../../routes/routes";
-import GeneralStyles from "../../components/GeneralStyles";
+import useFirebaseRecipes from "../../api/useFirebaseRecipes";
 import NavigationPage from "../../components/NavigationPage";
 import { SectionTitle } from "../../components/SectionTitle";
 import { colors, shadows } from "../../constants";
 import AddRecipeHeader from "../add-recipe-header";
-import IngredientManager from "./IngredientManager";
-import InstructionManager from "./InstructionManager";
+import { IngredientFlatList } from "./IngredientFlatList";
+import { InstructionFlatList } from "./InstructionFlatList";
 
 const styles = StyleSheet.create({
   main: {
@@ -50,7 +46,6 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    paddingHorizontal: 20,
     paddingTop: 10,
   },
   saveButton: {
@@ -67,32 +62,51 @@ const styles = StyleSheet.create({
   },
 });
 
-type InstructionPageProps = AddRecipePageProps<"pagetwo">;
+export type InstructionPageProps = AddRecipePageProps<"pagetwo">;
 
 export default function InstructionPage({
   navigation,
   route,
 }: InstructionPageProps) {
+  const recipe = useSelector(selectRecipeFields);
+  const { addRecipe } = useFirebaseRecipes();
+  const dispatch = useDispatch();
+
+  // TODO : Test this and see if the redirection works as expected.
   const saveHandle = () => {
-    // saveRecipe();
+    addRecipe(recipe).then((res) => {
+      const parentNavigator = navigation.getParent<NavigationProp<RootStack>>();
+      if (parentNavigator)
+        parentNavigator.reset({
+          routes: [
+            { name: "home" },
+            { name: "view-recipe", params: { data: res } },
+          ],
+        });
+    });
   };
 
   return (
     <NavigationPage>
       <AddRecipeHeader lastPage="pageone" />
-      <View style={styles.body}>
-        <SectionTitle>Ingredients</SectionTitle>
-        <View style={styles.ingredientContainer}>
-          <IngredientManager />
-        </View>
-        <SectionTitle>Instructions</SectionTitle>
-        <View>
-          <InstructionManager />
-        </View>
-        <Pressable style={styles.saveButton} onPress={saveHandle}>
-          <Text style={styles.saveTxt}>Save</Text>
+      <NestableScrollContainer automaticallyAdjustKeyboardInsets>
+        <Pressable style={{ flex: 1 }}>
+          <SectionTitle style={{ paddingHorizontal: 20 }}>
+            Ingredients
+          </SectionTitle>
+          <IngredientFlatList ingredients={recipe.ingredients} />
+
+          <SectionTitle style={{ paddingHorizontal: 20 }}>
+            Instructions
+          </SectionTitle>
+          <InstructionFlatList instructions={recipe.instructions} />
+
+          <View style={{ height: 30 }} />
         </Pressable>
-      </View>
+      </NestableScrollContainer>
+      <Pressable style={styles.saveButton} onPress={saveHandle}>
+        <Text style={styles.saveTxt}>Save</Text>
+      </Pressable>
     </NavigationPage>
   );
 }

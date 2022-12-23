@@ -34,7 +34,7 @@ export default function NutritionDetailsBedsheet({
   const dispatch = useDispatch();
   const bedsheetRef = useRef<BedsheetRef>()
 
-  const updateRowHandle = (keyValuePair) => {
+  const updateRowHandle = (keyValuePair: {[key: string]: any}) => {
     console.log(keyValuePair);
     setNutritionValues((current) => {
       return {
@@ -45,7 +45,7 @@ export default function NutritionDetailsBedsheet({
   };
 
   const doneHandle = () => {
-    dispatch(setNewRecipeField({nutrition_facts:nutritionValues}))
+    dispatch(setNewRecipeField({nutrition_facts: nutritionValues}))
     bedsheetRef.current.close()
   };
   const cancelHandle = () => bedsheetRef.current.close();
@@ -86,7 +86,7 @@ export default function NutritionDetailsBedsheet({
       <View style={styles.main}>
         <Text style={styles.header}>Nutrition Information</Text>
         <NutritionTable data={data} updateValue={updateRowHandle} />
-        <ActionRow doneHandle={doneHandle} cancelHandle={cancelHandle} />
+        <ActionRow onDone={doneHandle} onCancel={cancelHandle} />
       </View>
     </Bedsheet>
   );

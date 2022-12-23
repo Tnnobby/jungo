@@ -1,6 +1,11 @@
 import { useNavigation } from "@react-navigation/native";
 import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useDispatch } from "react-redux";
+import {
+  addInstruction,
+  editInstruction,
+} from "../../redux/reducers/newRecipeReducer";
 import { AddRecipePageProps } from "../../routes/routes";
 import GeneralStyles from "../components/GeneralStyles";
 import NavigationPage from "../components/NavigationPage";
@@ -15,24 +20,36 @@ export const InstructionEditModal: React.FC<InstructionEditModalProps> = ({
   navigation,
   route,
 }) => {
-  const { id, value } = route.params.initialValue;
+  const { id, value, newInstruction } = route.params.initialValue;
   const [description, setDescription] = useState(value);
+  const dispatch = useDispatch();
   const editRef = useRef<TextInput>();
 
   const inputPress = () => editRef.current.focus();
   const doneHandle = () => {
     console.log(description);
-    // description !== NULL_PLACEHOLDER && setValue(description);
-    close();
+    if (description !== null) {
+      if (newInstruction) dispatch(addInstruction(description));
+      else
+        dispatch(
+          editInstruction({
+            index: parseInt(id.split("_")[1]),
+            value: description,
+          })
+        );
+    }
+    navigation.goBack();
   };
 
   return (
     <NavigationPage>
-      <AddRecipeHeader lastPage="pagetwo" backButtonShown={false} onClosePress={() => navigation.goBack()} />
+      <AddRecipeHeader
+        lastPage="pagetwo"
+        backButtonShown={false}
+        onClosePress={() => navigation.goBack()}
+      />
       <View style={styles.body}>
-        <Text
-          style={{ ...GeneralStyles.header, color: colors.primary_color }}
-        >
+        <Text style={{ ...GeneralStyles.header, color: colors.primary_color }}>
           Edit Step {parseInt(id.split("_")[1]) + 1}
         </Text>
         <Pressable style={styles.editBox} onPress={inputPress}>
@@ -41,7 +58,7 @@ export const InstructionEditModal: React.FC<InstructionEditModalProps> = ({
             multiline={true}
             style={styles.input}
             ref={editRef}
-            defaultValue={description === NULL_PLACEHOLDER ? null : description}
+            defaultValue={newInstruction ? null : description}
             onChangeText={setDescription}
           />
         </Pressable>

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Animated,
   Image,
   Keyboard,
   Pressable,
@@ -10,19 +9,20 @@ import {
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
+import { isTablet } from "../../App";
 import {
+  addPhoto,
   selectRecipeFields,
-  setNewRecipeField,
   setRecipeTitle,
 } from "../../redux/reducers/newRecipeReducer";
 import { AddRecipePageProps } from "../../routes/routes";
 import { AnimatedButton } from "../components/AnimatedButton";
 import GeneralStyles from "../components/GeneralStyles";
+import { KeyboardSafeView, KeyboardSafeViewRef } from "../components/KeyboardSafeView";
 import NavigationPage from "../components/NavigationPage";
 import { TextArea } from "../components/TextArea";
 import { colors, shadows } from "../constants";
-import useCamera from "../hooks/useCamera";
-import { useOverlay } from "../hooks/useOverlay";
+import { useCamera } from "../hooks/useCamera";
 import Camera from "../svg/jsx/Camera";
 import ChefHat from "../svg/jsx/ChefHat";
 import FireIcon from "../svg/jsx/FireIcon";
@@ -154,56 +154,18 @@ const styles = StyleSheet.create({
 
 type StartPageProps = AddRecipePageProps<"pageone">;
 
-export default function StartPage({ navigation, route }: StartPageProps) {
+export default function StartPage({ navigation }: StartPageProps) {
+  const descriptionRef = useRef<TextInput>(null);
+  const keyboardSafeRef = useRef<KeyboardSafeViewRef>()
   const dispatch = useDispatch();
   const { preheat, cooktime, preptime, nutrition_facts, title, photo } =
     useSelector(selectRecipeFields);
   const [cameraPressing, setCameraPressing] = useState(false);
-  const [cameraOpen, setCameraOpen] = useState(false);
   const [keyboardUp, setKeyboardUp] = useState(false);
-  const keyboardOffset = useRef(new Animated.Value(0)).current;
-  const xOffset = useRef(new Animated.Value(0)).current;
-  const descriptionRef = useRef<TextInput>(null);
-  const { setBedsheet, valueRef } = useOverlay();
-  const camera = useCamera();
-
-  const triggerKeyboardOffset = () => {
-    const _show = Keyboard.addListener("keyboardDidShow", (e) => {
-      Animated.spring(keyboardOffset, {
-        toValue: -e.endCoordinates.height + 20,
-        useNativeDriver: true,
-      }).start(() => _show.remove());
-    });
-    const _hide = Keyboard.addListener("keyboardDidHide", (e) => {
-      Animated.spring(keyboardOffset, {
-        toValue: 0,
-        useNativeDriver: true,
-      }).start(() => _hide.remove());
-    });
-  };
-
-  useEffect(() => {
-    const _up = Keyboard.addListener("keyboardDidShow", () =>
-      setKeyboardUp(true)
-    );
-    const _down = Keyboard.addListener("keyboardDidHide", () =>
-      setKeyboardUp(false)
-    );
-
-    return () => {
-      _up.remove();
-      _down.remove();
-    };
-  }, []);
+  const { open } = useCamera();
 
   const cameraPress = () => {
-    setCameraOpen(true);
-    camera.open({
-      onClose: () => {
-        setCameraOpen(false);
-        setPhoto();
-      },
-    });
+    open((picture) => picture && dispatch(addPhoto(picture.uri)))
   };
   const cameraPressIn = () => setCameraPressing(true);
   const cameraPressOut = () => setCameraPressing(false);
@@ -212,37 +174,28 @@ export default function StartPage({ navigation, route }: StartPageProps) {
     navigation.navigate("temperature-bedsheet", { initialValue: preheat });
 
   const cookTimeActionTrigger = () =>
-    navigation.navigate("timer-bedsheet", { initialValue: cooktime });
+    navigation.navigate("timer-bedsheet", { initialValue: cooktime, fieldName: 'cooktime' });
 
   const prepTimeActionTrigger = () =>
-    navigation.navigate("timer-bedsheet", { initialValue: preptime });
+    navigation.navigate("timer-bedsheet", { initialValue: preptime, fieldName: 'preptime' });
 
   const caloriesActionTrigger = () =>
     navigation.navigate("nutrition-bedsheet", {
       initialValue: nutrition_facts,
     });
 
-  const setPhoto = () => {
-    console.log("setting photo to:", camera.pictures.current);
-    dispatch(setNewRecipeField({ photo: camera.pictures.current }));
-  };
-
-
   const nextHandle = () => {
     if (keyboardUp) {
       Keyboard.dismiss();
-      // keyboardOffset.addListener(() => {
-      //   console.log('done');
-      //   keyboardOffset.removeAllListeners();
-      //   setTimeout(() => {
-      //     goNext();
-      //   }, 275)
-      // })
     } else goNext();
   };
 
   const goNext = () => navigation.navigate("pagetwo");
   const updateTitle = (ev) => dispatch(setRecipeTitle(ev.nativeEvent.text));
+
+  const keyboardHandler = () => {
+    !isTablet && keyboardSafeRef.current.raise()
+  }
 
   const items = [
     {
@@ -288,7 +241,7 @@ export default function StartPage({ navigation, route }: StartPageProps) {
   return (
     <NavigationPage>
       <AddRecipeHeader />
-      <View style={styles.body}>
+      <KeyboardSafeView ref={keyboardSafeRef} style={styles.body}>
         {/* TITLE ROW */}
         <View style={styles.titleRow}>
           <Pressable
@@ -300,10 +253,10 @@ export default function StartPage({ navigation, route }: StartPageProps) {
             onPressOut={cameraPressOut}
             onPress={cameraPress}
           >
-            {photo.length < 1 ? (
+            {!photo ? (
               <Camera /* Camera Icon */ />
             ) : (
-              <Image source={{ ...photo[0], width: "100%", height: "100%" }} />
+              <Image source={{ uri: photo, height: 80, width: 80 }} />
             )}
           </Pressable>
           <View style={styles.titleColumn}>
@@ -359,12 +312,13 @@ export default function StartPage({ navigation, route }: StartPageProps) {
         >
           Description
         </Text>
-        <TextArea 
+        <TextArea
           placeholder="Enter Description"
           multiline={true}
+          onFocus={keyboardHandler}
           ref={descriptionRef}
         />
-      </View>
+      </KeyboardSafeView>
       <AnimatedButton
         style={(state) => {
           return !state.pressed

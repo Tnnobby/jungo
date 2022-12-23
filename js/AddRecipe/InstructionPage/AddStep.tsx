@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Pressable,
   PressableProps,
+  StyleProp,
   StyleSheet,
   Text,
-  View,
+  ViewStyle,
 } from "react-native";
 
 const styles = StyleSheet.create({
@@ -25,9 +26,9 @@ const styles = StyleSheet.create({
   },
 });
 
-interface AddStepProps extends PressableProps {}
-export const AddStep: React.FC<AddStepProps> = (props) => (
-  <Pressable style={styles.main} {...props}>
+export interface AddStepProps extends PressableProps {}
+export const AddStep: React.FC<AddStepProps> = ({ style, ...props }) => (
+  <Pressable style={[styles.main, style as StyleProp<ViewStyle>]} {...props}>
     <Text style={styles.text}>+ </Text>
     <Text style={styles.text}>Step</Text>
   </Pressable>

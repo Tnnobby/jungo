@@ -11,7 +11,6 @@ import {
 import { Animated } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { initNewRecipe } from "../../redux/reducers/newRecipeReducer";
-import useFirebaseRecipes from "../hooks/useFirebaseRecipes";
 import { Header } from "../components/header";
 import { useNavigation } from "../hooks/useNavigation";
 import Page from "../Page";
