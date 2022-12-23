@@ -1,5 +1,5 @@
 {
-  "name": "jungo",
+  "name": "Jungo App",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -43,7 +43,8 @@
     "react-native-web": "0.18.10",
     "react-redux": "^8.0.2",
     "redux": "^4.2.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

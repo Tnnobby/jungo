@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Jungo App",
-    "slug": "Jungo App",
+    "slug": "JungoApp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,10 +27,17 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "co.jungoapp.jungo-fresh",
-      "permissions": ["CAMERA"]
+      "permissions": [
+        "CAMERA"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "36667050-4c1a-4efc-a0df-61156729e7fc"
+      }
     }
   }
 }
