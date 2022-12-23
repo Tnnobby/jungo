@@ -8,8 +8,6 @@ import { UserDoc } from "../context-providers/FirebaseProvider";
 import { RootPageProps } from "../../routes/routes";
 import NavigationPage from "../components/NavigationPage";
 import { SettingsButton } from "../components/buttons/SettingsButton";
-import { useDispatch } from "react-redux";
-import { initNewRecipe } from "../../redux/reducers/newRecipeReducer";
 
 const TEST_DATA = {
   user_id: 1,
