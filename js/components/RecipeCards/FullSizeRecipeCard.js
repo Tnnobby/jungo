@@ -1,7 +1,6 @@
 import AnimatedLottieView from "lottie-react-native";
 import { useEffect } from "react";
 import {
-  Dimensions,
   Pressable,
   StyleSheet,
   Text,

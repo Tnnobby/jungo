@@ -3,7 +3,6 @@ import { View, StyleSheet, Image, Text } from "react-native";
 import { useFirebaseImage } from "../../api/useFirebaseImage";
 import { NutritionFact } from "../../ViewRecipe/NutritionFact";
 import StatefulPressable from "../StatefulPressable";
-import { RecipeData } from "../../types/RecipeTypes";
 import { Recipe } from "../../api/firebase";
 
 const styles = StyleSheet.create({
