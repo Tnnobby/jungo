@@ -1,4 +1,3 @@
-import { useNavigation } from "@react-navigation/native";
 import { useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
@@ -11,8 +10,6 @@ import GeneralStyles from "../components/GeneralStyles";
 import NavigationPage from "../components/NavigationPage";
 import { colors } from "../constants";
 import AddRecipeHeader from "./add-recipe-header";
-
-const NULL_PLACEHOLDER = "NEW_DESCRIPTION";
 
 type InstructionEditModalProps = AddRecipePageProps<"instruction-modal">;
 

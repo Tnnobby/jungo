@@ -20,7 +20,6 @@ export default function SignUpPage({
     newUser({ method: "email", email: username, password })
       .then((val) => {
         close();
-        console.log(val);
         navigation.navigate("signup-info");
       })
       .catch((reason) => {

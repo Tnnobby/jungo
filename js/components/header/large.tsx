@@ -1,11 +1,11 @@
-import { View, StyleSheet, Text, Animated, Pressable } from "react-native";
+import { View, StyleSheet, Text, Animated } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useNavigation } from "../../hooks/useNavigation";
 import NotificationBell from "../../svg/jsx/NotificationBell";
 import SearchIcon from "../../svg/jsx/Search";
 import { CircleButton } from "../buttons";
 import ProfilePic from "../ProfilePic";
-import { TransitionBuilder } from "../TransitionManager/transition";
+
+export const LARGE_HEADER_HEIGHT = 70
 
 const styles = StyleSheet.create({
   main: {
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    height: 70,
+    height: LARGE_HEADER_HEIGHT,
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
 });
+
 
 type LargeHeaderProps = {
   

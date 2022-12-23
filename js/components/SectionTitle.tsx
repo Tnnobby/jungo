@@ -1,15 +1,21 @@
-import { Text } from "react-native";
+import { Text, TextProps } from "react-native";
 import { colors } from "../constants";
 
 const styles = {
   fontSize: 26,
   fontFamily: "Rubik_700",
-  marginBottom: 10,
-  color: colors.primary_color
+  marginVertical: 6,
+  color: colors.primary_color,
 };
 
-type SectionTitleProps = {
-  children?: string
-}
+type SectionTitleProps = TextProps;
 
-export const SectionTitle: React.FC<SectionTitleProps> = ({children}) => <Text style={styles}>{children}</Text>;
+export const SectionTitle: React.FC<SectionTitleProps> = ({
+  children,
+  style,
+  ...props
+}) => (
+  <Text style={[styles, style]} {...props}>
+    {children}
+  </Text>
+);

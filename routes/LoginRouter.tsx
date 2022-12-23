@@ -4,10 +4,10 @@ import LoginSplash from "../js/LoginPage/screens/LoginSplash";
 import SignUpPage from "../js/LoginPage/screens/SignUpPage";
 import UserInfoPage from "../js/LoginPage/screens/UserInfoPage";
 import { Platform } from "react-native";
-import useFirebase from "../js/hooks/useFirebase";
+import useFirebase from "../js/api/useFirebase";
 import { RootPageProps } from "./routes";
 import { BedsheetProps } from "./AddRecipeRouter";
-import { DatePicker } from "../js/components/bedsheets/DatePicker";
+import { DatePicker } from "../screens/login/DatePicker";
 import { LoginProvider } from "../js/context-providers/LoginContextType";
 
 export type LoginStack = {

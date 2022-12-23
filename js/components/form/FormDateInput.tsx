@@ -1,5 +1,4 @@
 import RNDateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useState, useEffect } from "react";
 import {
   Pressable,
@@ -9,10 +8,6 @@ import {
   Platform,
   Keyboard,
 } from "react-native";
-import { useLoginContext } from "../../context-providers/LoginContextType";
-import { LoginStack } from "../../../routes/LoginRouter";
-import { useOverlay } from "../../hooks/useOverlay";
-import { DatePicker } from "../bedsheets/DatePicker";
 
 const styles = StyleSheet.create({
   main: {
@@ -71,7 +66,8 @@ export default function FormDateInput({
   };
 
   const setDateHandle = (ev: DateTimePickerEvent, date: Date) => {
-    
+    setIsOpen(false);
+    onChange(date)
   }
 
   const formatDate = (date) => {

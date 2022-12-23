@@ -1,6 +1,5 @@
+import { useEffect } from "react";
 import {
-  Dimensions,
-  FlatList,
   Image,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -11,13 +10,13 @@ import {
   ViewStyle,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import Animated, { Layout, useSharedValue } from "react-native-reanimated";
+import Animated, { useSharedValue } from "react-native-reanimated";
 import { RootPageProps } from "../../routes/routes";
-import { Recipe } from "../api/firebase";
+import { HourMinuteTime, Recipe } from "../api/firebase";
+import { useFirebaseImage } from "../api/useFirebaseImage";
 import { Header } from "../components/header";
 import { SMALL_HEADER_HEIGHT } from "../components/header/small";
 import NavigationPage from "../components/NavigationPage";
-import Page from "../Page";
 import CooktimeIcon from "../svg/jsx/CooktimeIcon";
 import FireIcon from "../svg/jsx/FireIcon";
 import { NutritionFact } from "./NutritionFact";
@@ -71,22 +70,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const DATA = {
-  title: "Roasted Tomato Hummus",
-  preheat: 350,
-  cooktime: { hours: 2, minutes: 25 },
-  preptime: { hours: 3, minutes: 1 },
-  nutrition_facts: { calories: 243, fats: 20, carbs: 200, protein: 15 },
-  ingredients: ["3 Oranges", "2 Gallons Milk"],
-  description:
-    "This is a description of a recipe that is literally just a bunch of unpeeled oranges... Not very apetizing...",
-  instructions: [
-    "In a large bowl blend the three oranges, do not peel the oranges as the peels are the most nutritious part of the orange.",
-    "Then Eat the Oranges",
-  ],
-  photo: [],
-};
-
 interface ViewRecipeProps extends RootPageProps<"view-recipe"> {
   data?: Recipe;
 }
@@ -97,8 +80,13 @@ export default function ViewRecipe({ navigation, route }: ViewRecipeProps) {
     backgroundColor: "rgba(255,255,255, 1)",
   });
   const dimensions = useWindowDimensions();
+  const { getImg, imgUrl } = useFirebaseImage()
 
-  const formatTime = (time) => {
+  useEffect(() => {
+    getImg(data.details.photo)
+  }, [])
+
+  const formatTime = (time: HourMinuteTime) => {
     let _return = "";
     _return += time.hours ? time.hours + " hr " : "";
     _return += time.minutes ? time.minutes + " min" : "";
@@ -132,12 +120,12 @@ export default function ViewRecipe({ navigation, route }: ViewRecipeProps) {
             width: dimensions.width,
           }}
         >
-          <Image
+          {imgUrl && <Image
             style={{ height: "100%", width: "100%" }}
             source={{
-              uri: "https://cdn.pixabay.com/photo/2017/01/30/13/49/pancakes-2020863__480.jpg",
+              uri: imgUrl,
             }}
-          />
+          />}
         </Animated.View>
 
         <View style={styles.body}>

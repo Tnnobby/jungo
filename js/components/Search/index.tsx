@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { View, StyleSheet, Animated, TextInput } from 'react-native'
+import { View, StyleSheet, Animated, TextInput, TextInputProps } from 'react-native'
 import SearchIcon from '../../svg/jsx/Search';
 import StatefulPressable from '../StatefulPressable'
 
@@ -27,7 +27,9 @@ const styles = StyleSheet.create({
   }
 })
 
-export default function Search ({placeholder = 'Apple Crisp', ...props}) {
+interface SearchProps extends TextInputProps {}
+
+export default function Search ({placeholder = 'Apple Crisp', ...props}: SearchProps) {
   const iconTranslate = useRef(new Animated.Value(1)).current;
 
   return (

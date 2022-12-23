@@ -21,6 +21,7 @@ type FirebaseActions = {
   dispatchUser: React.Dispatch<UserAction>;
   addListener: AddListenerFunction<ListenerTypes>;
   removeListener: (id: number) => boolean;
+  fetchUserDoc: () => Promise<boolean>;
 };
 
 export interface FirebaseContextType {
@@ -38,12 +39,16 @@ export interface UserDoc {
   first_name: string;
   last_name: string;
   username: string;
+  private: {
+    birthday: Timestamp;
+  }
 }
 
 export interface JungoUser extends Partial<User> {
   doc?: UserDoc;
   hasDoc?: boolean;
   fetchingDoc?: boolean;
+  newUser?: boolean;
 }
 
 type UserAction = {
@@ -52,7 +57,9 @@ type UserAction = {
     | "FETCH_USER_DOC_SUCCESS"
     | "FETCH_USER_DOC_ERROR"
     | "SET_USER"
-    | "LOG_OUT_USER";
+    | "LOG_OUT_USER"
+    | "SET_NEW_USER"
+    | "SET_NEW_USER_DOC";
   doc?: UserDoc;
   user?: User;
 };
@@ -69,6 +76,7 @@ export const FirebaseContext = createContext<FirebaseContextType>({
     dispatchUser: null,
     addListener: () => null,
     removeListener: () => null,
+    fetchUserDoc: () => null,
   },
 });
 
@@ -93,15 +101,26 @@ const userReducer: UserReducer = (state, action) => {
       };
     case "SET_USER":
       return {
-        ...state,
         ...action.user,
         doc: null,
         hasDoc: false,
+        fetchingDoc: false,
       };
-
+    case "SET_NEW_USER":
+      return {
+        ...state,
+        newUser: true,
+      };
+    case "SET_NEW_USER_DOC":
+      return {
+        ...state,
+        newUser: false,
+        doc: action.doc,
+        fetchingDoc: false,
+        hasDoc: true,
+      };
     case "LOG_OUT_USER":
       return initialState;
-
     default:
       return state;
   }
@@ -137,8 +156,9 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
   const listeners = useRef<ListenerList>([]);
   const { alert } = useAlert();
 
+  // TODO : Move this to Login function, right now it is triggering unnecessarily on signup, should only need to be triggered on login.
   useEffect(() => {
-    if (user?.uid) {
+    if (user?.uid && !user?.newUser) {
       dispatchUser({ type: "FETCH_USER_DOC_START" });
       getUserDoc(user.uid)
         .then((doc) => {
@@ -150,6 +170,24 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
         });
     }
   }, [user?.uid]);
+
+  const fetchUserDoc = async () => {
+    dispatchUser({ type: "FETCH_USER_DOC_START" });
+    return new Promise<boolean>((resolve, reject) => {
+      console.log(user.uid);
+      getUserDoc(user.uid)
+        .then((doc) => {
+          console.log("userDoc Fetched");
+          dispatchUser({ type: "FETCH_USER_DOC_SUCCESS", doc });
+          resolve(true);
+        })
+        .catch((error) => {
+          console.log("userDoc Fetch failed");
+          dispatchUser({ type: "FETCH_USER_DOC_ERROR" });
+          resolve(false);
+        });
+    });
+  };
 
   useEffect(() => {
     if (!user.fetchingDoc) {
@@ -187,7 +225,7 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
   const logout = () => {
     signOut(auth).then((val) => {
       dispatchUser({ type: "LOG_OUT_USER" });
-      alert({ message: "Successfully Logged Out!" });
+      // alert({ message: "Successfully Logged Out!" });
     });
   };
 
@@ -200,7 +238,7 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
     return {
       remove: () =>
         (listeners.current = listeners.current.filter(
-          (value, index) => index !== id
+          (_, index) => index !== id
         )),
     };
   };
@@ -220,6 +258,7 @@ const FirebaseWrapper: (props: ProviderProps) => JSX.Element = ({
           dispatchUser,
           addListener,
           removeListener,
+          fetchUserDoc,
         },
       }}
     >

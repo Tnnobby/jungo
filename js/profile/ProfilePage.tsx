@@ -3,13 +3,13 @@ import ProfileHeader from "./ProfileHeader";
 import KitchenBody from "./KitchenBody";
 import ProfileTabHeader from "./ProfileTabHeader";
 import FloatingAddButton from "../components/AddButton";
-import Page from "../Page";
 import { Header } from "../components/header";
 import { UserDoc } from "../context-providers/FirebaseProvider";
 import { RootPageProps } from "../../routes/routes";
 import NavigationPage from "../components/NavigationPage";
 import { SettingsButton } from "../components/buttons/SettingsButton";
-import useFirebase from "../hooks/useFirebase";
+import { useDispatch } from "react-redux";
+import { initNewRecipe } from "../../redux/reducers/newRecipeReducer";
 
 const TEST_DATA = {
   user_id: 1,
@@ -41,18 +41,19 @@ const styles = StyleSheet.create({
 
 interface ProfilePageProps extends RootPageProps<"profile"> {
   data: UserDoc;
+  myProfile: boolean;
 }
 
 // TODO : Finish converting this to use navigation and routes props
-const ProfilePage = ({ data, navigation, route }: ProfilePageProps) => {
-  const { actions } = useFirebase()
+const ProfilePage = ({ data, myProfile, navigation, route }: ProfilePageProps) => {
 
   const onAddNewHandle = () => {
     navigation.navigate('add-recipe')
   };
 
   const settingsHandle = () => {
-    actions.logout()
+    // actions.logout()
+    navigation.navigate('settings')
   }
 
   return (
@@ -63,7 +64,7 @@ const ProfilePage = ({ data, navigation, route }: ProfilePageProps) => {
           closeButtonShown={false}
           onBackPress={undefined}
           onClosePress={undefined}
-          rightComponent={<SettingsButton onPress={settingsHandle}/>}
+          rightComponent={myProfile && <SettingsButton onPress={settingsHandle}/>}
         />
         <ScrollView
           style={{
@@ -82,7 +83,7 @@ const ProfilePage = ({ data, navigation, route }: ProfilePageProps) => {
           </View>
           <KitchenBody />
         </ScrollView>
-        <FloatingAddButton onPress={onAddNewHandle} />
+        {myProfile && <FloatingAddButton onPress={onAddNewHandle} />}
       </View>
     </NavigationPage>
   );

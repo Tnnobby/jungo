@@ -11,7 +11,7 @@ import {
   SafeAreaViewProps,
 } from "react-native-safe-area-context";
 
-interface NavigationPageProps extends SafeAreaViewProps {
+export interface NavigationPageProps extends SafeAreaViewProps {
   statusBarColor?: string;
   keyboardSafe?: boolean;
 }

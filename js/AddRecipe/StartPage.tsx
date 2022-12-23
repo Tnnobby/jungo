@@ -12,13 +12,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { isTablet } from "../../App";
 import {
   addPhoto,
+  initNewRecipe,
   selectRecipeFields,
+  setNewRecipeField,
   setRecipeTitle,
 } from "../../redux/reducers/newRecipeReducer";
 import { AddRecipePageProps } from "../../routes/routes";
 import { AnimatedButton } from "../components/AnimatedButton";
 import GeneralStyles from "../components/GeneralStyles";
-import { KeyboardSafeView, KeyboardSafeViewRef } from "../components/KeyboardSafeView";
+import {
+  KeyboardSafeView,
+  KeyboardSafeViewRef,
+} from "../components/KeyboardSafeView";
 import NavigationPage from "../components/NavigationPage";
 import { TextArea } from "../components/TextArea";
 import { colors, shadows } from "../constants";
@@ -129,7 +134,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   nextButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 20,
     right: 20,
     width: 125,
@@ -138,7 +143,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 8,
     borderRadius: 100,
-    ...shadows.elevation2
+    ...shadows.elevation2,
   },
   nextButtonText: {
     fontFamily: "Rubik_500",
@@ -156,7 +161,7 @@ type StartPageProps = AddRecipePageProps<"pageone">;
 
 export default function StartPage({ navigation }: StartPageProps) {
   const descriptionRef = useRef<TextInput>(null);
-  const keyboardSafeRef = useRef<KeyboardSafeViewRef>()
+  const keyboardSafeRef = useRef<KeyboardSafeViewRef>();
   const dispatch = useDispatch();
   const { preheat, cooktime, preptime, nutrition_facts, title, photo } =
     useSelector(selectRecipeFields);
@@ -164,8 +169,12 @@ export default function StartPage({ navigation }: StartPageProps) {
   const [keyboardUp, setKeyboardUp] = useState(false);
   const { open } = useCamera();
 
+  useEffect(() => {
+    dispatch(initNewRecipe())
+  }, [])
+
   const cameraPress = () => {
-    open((picture) => picture && dispatch(addPhoto(picture.uri)))
+    open((picture) => picture && dispatch(addPhoto(picture.uri)));
   };
   const cameraPressIn = () => setCameraPressing(true);
   const cameraPressOut = () => setCameraPressing(false);
@@ -174,10 +183,16 @@ export default function StartPage({ navigation }: StartPageProps) {
     navigation.navigate("temperature-bedsheet", { initialValue: preheat });
 
   const cookTimeActionTrigger = () =>
-    navigation.navigate("timer-bedsheet", { initialValue: cooktime, fieldName: 'cooktime' });
+    navigation.navigate("timer-bedsheet", {
+      initialValue: cooktime,
+      fieldName: "cooktime",
+    });
 
   const prepTimeActionTrigger = () =>
-    navigation.navigate("timer-bedsheet", { initialValue: preptime, fieldName: 'preptime' });
+    navigation.navigate("timer-bedsheet", {
+      initialValue: preptime,
+      fieldName: "preptime",
+    });
 
   const caloriesActionTrigger = () =>
     navigation.navigate("nutrition-bedsheet", {
@@ -190,12 +205,16 @@ export default function StartPage({ navigation }: StartPageProps) {
     } else goNext();
   };
 
+  const descriptionHandle = (text: string) => {
+    dispatch(setNewRecipeField({ description: text }));
+  };
+
   const goNext = () => navigation.navigate("pagetwo");
   const updateTitle = (ev) => dispatch(setRecipeTitle(ev.nativeEvent.text));
 
   const keyboardHandler = () => {
-    !isTablet && keyboardSafeRef.current.raise()
-  }
+    !isTablet && keyboardSafeRef.current.raise();
+  };
 
   const items = [
     {
@@ -316,6 +335,7 @@ export default function StartPage({ navigation }: StartPageProps) {
           placeholder="Enter Description"
           multiline={true}
           onFocus={keyboardHandler}
+          onChangeText={descriptionHandle}
           ref={descriptionRef}
         />
       </KeyboardSafeView>

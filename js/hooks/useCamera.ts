@@ -1,31 +1,10 @@
-import { useState, useRef } from 'react'
-import { useNavigation } from './useNavigation'
+import { useContext } from "react"
+import { CameraContext } from "../context-providers/CameraProvider"
 
-export default function useCamera () {
-  const pictures = useRef<any[]>([])
-  const { openCamera } = useNavigation()
-
-  const addPicture = (picture: any) => {
-    pictures.current = [
-      ...pictures.current,
-      picture
-    ]
-  }
-
-  const clearPictures = () => {
-    pictures.current = []
-  }
-
-  const open = (props?: any) => {
-    clearPictures()
-    openCamera({
-      addPicture,
-      ...props
-    })
-  }
+export const useCamera = () => {
+  const { open } = useContext(CameraContext)
 
   return {
-    open,
-    pictures
+    open
   }
 }

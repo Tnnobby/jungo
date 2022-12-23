@@ -6,7 +6,7 @@ import { AddRecipePageProps } from "../../routes/routes";
 import Bedsheet from "../components/Bedsheet";
 import { BedsheetRef } from "../components/Bedsheet/bedsheet";
 import ActionRow from "../components/Bedsheet/ActionRow";
-import NutritionTable from "../components/bedsheets/NutritionTable";
+import NutritionTable from "../components/NutritionTable";
 
 const styles = StyleSheet.create({
   main: {

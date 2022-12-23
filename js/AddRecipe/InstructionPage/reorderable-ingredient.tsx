@@ -7,7 +7,6 @@ import {
   TextInputProps,
   View,
   Text,
-  Keyboard,
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SlideOutLeft } from "react-native-reanimated";

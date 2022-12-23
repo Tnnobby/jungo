@@ -1,11 +1,11 @@
 import AnimatedLottieView from "lottie-react-native";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { Animated, StyleSheet, View, Dimensions } from "react-native";
+import { Animated, Dimensions, StyleSheet, View } from "react-native";
+
 const styles = StyleSheet.create({
   main: {
-    height: "100%",
-    width: "100%",
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -13,8 +13,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     left: 0,
-    height: Dimensions.get('window').height,
-    width: Dimensions.get('window').width,
+    height: Dimensions.get('screen').height,
+    width: Dimensions.get('screen').width,
     zIndex: 100,
   },
   bg: {
@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: 'red'
   },
 });
 
@@ -51,7 +50,6 @@ export default function Loading({
   onOpen = () => null,
   onClose = () => null,
   open,
-  ...props
 }: {
   open: boolean;
   onClose?: VoidFunction;

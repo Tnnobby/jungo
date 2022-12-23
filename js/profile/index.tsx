@@ -1,8 +1,12 @@
-import withUser from "../components/withUser";
+import withUser from "./withUser";
 import ProfilePage from "./ProfilePage";
+import { RootPageProps } from "../../routes/routes";
 
-export default function Profile (props) {
-  const ProfileWithUser = withUser(ProfilePage)
+type ProfilePageProps = RootPageProps<'profile'>
 
-  return <ProfileWithUser {...props}/>
+export default function Profile ({ navigation, route }: ProfilePageProps) {
+  const uid = route?.params?.uid
+  const ProfileWithUser = withUser(ProfilePage, uid)
+
+  return <ProfileWithUser navigation={navigation}/>
 }

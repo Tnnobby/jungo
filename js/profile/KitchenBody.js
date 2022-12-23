@@ -1,7 +1,5 @@
-import { ScrollView, StyleSheet, View } from "react-native";
-import Carousel from "../components/carousel/Carousel";
+import { StyleSheet, View } from "react-native";
 import Filter from "../components/filter/Filter";
-import RecipeCarousel from "../components/RecipeCarousel";
 
 const styles = StyleSheet.create({
   main: {
@@ -82,10 +80,10 @@ const COLLECTIONS = [
 export default function KitchenBody(props) {
   return (
     <View style={styles.main}>
-      <Carousel
+      {/* <Carousel
       title='Favorite Recipes'
       recipes={FAVORITE_RECIPES}
-      />
+      /> */}
       <Filter
         title="Collections"
         filters={COLLECTIONS}

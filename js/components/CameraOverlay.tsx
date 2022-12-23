@@ -1,9 +1,5 @@
-import { Camera, CameraType, FlashMode } from "expo-camera";
-import { useDispatch } from "react-redux";
+import { Camera, CameraCapturedPicture, CameraType, FlashMode } from "expo-camera";
 import { useEffect, useRef, useState } from "react";
-import {
-  addPhoto,
-} from "../../redux/reducers/cameraReducer";
 import {
   Animated,
   Dimensions,
@@ -17,7 +13,7 @@ import CloseX from "../svg/jsx/CloseX";
 import * as Haptics from "expo-haptics";
 import Flash from "../svg/jsx/Flash";
 import CheckIcon from "../svg/jsx/CheckIcon";
-import { useNavigation } from "../hooks/useNavigation";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
   cameraContainer: {
@@ -49,7 +45,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // backgroundColor: 'red'
   },
   reviewLowerToolbar: {
     flex: 1,
@@ -60,7 +55,6 @@ const styles = StyleSheet.create({
   shutterContainer: {
     height: 75,
     width: 75,
-    // backgroundColor: 'white',
     borderRadius: 100,
     borderColor: "white",
     borderWidth: 3,
@@ -118,20 +112,26 @@ const styles = StyleSheet.create({
     width: 90,
     padding: 25,
     // backgroundColor: 'red'
-  }
+  },
 });
+
+export type PictureConfirmCallback = (picture: CameraCapturedPicture) => void
 
 type CameraState = "loading" | "ready" | "processing" | "reviewing";
 
-export default function CameraOverlay({ close, addPicture, ...props }: {
-  close: () => void;
-  addPicture: (picture: any) => void
+export default function CameraOverlay({
+  onPictureConfirm,
+  onCancel,
+  ...props
+}: {
+  onPictureConfirm: (picture: CameraCapturedPicture) => void;
+  onCancel: () => void;
 }) {
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [cameraState, setCameraState] = useState<CameraState>("loading");
   const [shutterState, setShutterState] = useState(false);
   const [flashState, setFlashState] = useState(false);
-  const [tempPhoto, setTempPhoto] = useState(null);
+  const [tempPhoto, setTempPhoto] = useState<CameraCapturedPicture>(null);
   const shutterScale = useRef(new Animated.Value(1)).current;
   const cameraRef = useRef<Camera>();
 
@@ -142,8 +142,8 @@ export default function CameraOverlay({ close, addPicture, ...props }: {
   }, [permission]);
 
   const closeCamera = () => {
+    onCancel();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    close();
   };
   const onReadyHandle = () => setCameraState("ready");
 
@@ -166,32 +166,29 @@ export default function CameraOverlay({ close, addPicture, ...props }: {
   const shutterPress = () => {
     setCameraState("processing");
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    cameraRef.current.takePictureAsync({base64: true}).then((r) => {
-      // dispatch(addPhoto(r))
+    cameraRef.current.takePictureAsync({ base64: true }).then((r) => {
       setTempPhoto(r);
       setCameraState("reviewing");
     });
   };
 
-  const flashPressIn = () => {};
-  const flashPressOut = () => {};
   const flashPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setFlashState(!flashState);
   };
 
   const confirmHandle = () => {
-    addPicture(tempPhoto)
-    close()
-  }
+    console.log('picture taken')
+    onPictureConfirm(tempPhoto);
+  };
   const retakeHandle = () => {
-    setTempPhoto(null)
-    setCameraState('ready')
-  }
+    setTempPhoto(null);
+    setCameraState("ready");
+  };
 
   if (!permission) return <></>;
   return (
-    <>
+    <View style={{flex: 1}}>
       {permission.granted && (
         <View style={styles.cameraContainer}>
           <View style={styles.upperToolbar}>
@@ -218,10 +215,10 @@ export default function CameraOverlay({ close, addPicture, ...props }: {
           {cameraState === "reviewing" ? (
             <View style={styles.reviewLowerToolbar}>
               <Pressable style={styles.checkContainer} onPress={confirmHandle}>
-                <CheckIcon fill='white' />
+                <CheckIcon fill="white" />
               </Pressable>
               <Pressable style={styles.closeContainer} onPress={retakeHandle}>
-                <CloseX fill='white' />
+                <CloseX fill="white" />
               </Pressable>
             </View>
           ) : (
@@ -250,12 +247,7 @@ export default function CameraOverlay({ close, addPicture, ...props }: {
                 />
               </Pressable>
               <View style={styles.flashContainer}>
-                <Pressable
-                  style={styles.pressableFlash}
-                  onPress={flashPress}
-                  onPressIn={flashPressIn}
-                  onPressOut={flashPressOut}
-                >
+                <Pressable style={styles.pressableFlash} onPress={flashPress}>
                   <View style={styles.flash}>
                     <Flash active={flashState} />
                   </View>
@@ -265,6 +257,6 @@ export default function CameraOverlay({ close, addPicture, ...props }: {
           )}
         </View>
       )}
-    </>
+    </View>
   );
 }

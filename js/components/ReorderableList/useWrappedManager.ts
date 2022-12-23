@@ -1,5 +1,6 @@
-import { ReorderableManager } from "./useReorderableManager";
+
 import { LayoutRectangle } from 'react-native'
+import { ReorderableManager } from './reorderable';
 
 interface WrappedReorderableManager {
   setLayout: (layout: LayoutRectangle) => void;
@@ -20,6 +21,7 @@ export default function useWrappedManager (manager: ReorderableManager, id: stri
   };
   const setMoving = () => manager.setMoving(id);
   const setMovingEnded = () => manager.setMovingEnded()
+  const setAnimationEnded = () => manager.setAnimationEnded();
   const calculateOffset = () => manager.calculateOffset()
 
   return {

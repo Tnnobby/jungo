@@ -1,4 +1,4 @@
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, View } from "react-native";
 import { SafeAreaViewProps } from "react-native-safe-area-context";
 import ReorderableItem from "./reorderable-item";
 import { useEffect } from "react";
@@ -7,18 +7,20 @@ import { LayoutRectangle } from "react-native";
 
 export type ItemBase = {
   id: string;
+  item?: any;
   [key: string]: any;
 };
 
-export type ReordererRender<Item> = (info: {
-  item: Readonly<Item>;
-}) => React.ReactNode;
+export type ReordererRender<Item> = (
+  info: Readonly<Item>,
+  index: number
+) => React.ReactNode;
 
 export interface ReorderableProps<Item extends ItemBase>
   extends SafeAreaViewProps {
   data: Item[];
   renderItems: ReordererRender<Item>;
-  onChange?: (value: any[]) => void;
+  onChange?: ReorderChangeListener;
 }
 
 type ReorderableContext = {
@@ -33,27 +35,32 @@ function Reorderable<T extends ItemBase>({
 }: ReorderableProps<T>) {
   const manager = useReorderableManager(data);
 
-  // TODO : Add support for onReorder and onChange seperately
   useEffect(() => {
-    if (manager.elements && onChange) onChange(manager.elements);
-  }, [manager.elements]);
+    onChange && manager.onMoveEnded(onChange);
+  }, [onChange])
 
-  // FIXME : This is just assuming that any time
+  // FIXME : This is just assuming that any time data changes it is because the value is changing.
   useEffect(() => {
+    // console.log('reorderable data:', data)
+    console.log('changed')
     data && manager.setItems(data);
   }, [data]);
 
+  useEffect(() => {
+    console.log('isAnimating:', manager.isAnimating)
+  }, [manager.isAnimating])
+
   return (
-    <SafeAreaView style={style}>
+    <View style={style}>
       {manager.elements &&
         manager.elements.map(({ id, val }, index) => {
           return (
-            <ReorderableItem key={id} id={id} manager={manager}>
-              {renderItems({ item: val })}
+            <ReorderableItem key={id} id={id} manager={manager} reordering={manager.isAnimating}>
+              {renderItems(val, index)}
             </ReorderableItem>
           );
         })}
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -70,6 +77,7 @@ export type LayoutGetter = (id: string) => LayoutRectangle;
 export type LayoutSetter = (id: string, layout: LayoutRectangle) => void;
 export type StateGetter = (id: string) => ElementState;
 export type MovingSetter = (id?: string) => void;
+export type ReorderChangeListener = (elements: ReorderableElement[]) => void;
 
 export interface ReorderableManager {
   setLayout: LayoutSetter;
@@ -77,11 +85,14 @@ export interface ReorderableManager {
   getState: StateGetter;
   setMoving: MovingSetter;
   setMovingEnded: MovingSetter;
+  setAnimationEnded: () => void;
   addItem: (item: any) => void;
   setItems: (itemList: any[]) => void;
   checkOverlap: (id: string, verticalOffset: number) => void;
   calculateOffset: () => number;
+  onMoveEnded: (cb: ReorderChangeListener) => void;
   isMoving: boolean;
+  isAnimating: boolean;
   elements: ReorderableElement[];
 }
 
@@ -96,11 +107,15 @@ function useReorderableManager(list: any[]): ReorderableManager {
     createReorderableElement(list)
   );
   const [moving, setMoving] = useState<boolean>(false);
+  const [animating, setAnimating] = useState<boolean>(false);
   const movingState = useRef<{ start: number; current: number }>({
     start: null,
     current: null,
   });
   const tempOrder = useRef<ReorderableElement[]>([]);
+  const onMoveEnded = useRef<ReorderChangeListener>(null)
+
+  const _onMoveEnded = (cb: ReorderChangeListener) => onMoveEnded.current = cb;
 
   const _moveElement = (from: number, to: number) => {
     movingState.current.current = to;
@@ -137,9 +152,16 @@ function useReorderableManager(list: any[]): ReorderableManager {
       current: elements.findIndex((val) => val.id === id),
     };
     tempOrder.current = [...elements];
+    setAnimating(true);
     setMoving(true);
   };
-  const _setMovingEnded: MovingSetter = () => setMoving(false);
+  const _setMovingEnded: MovingSetter = () => {
+    setMoving(false)
+    onMoveEnded.current && onMoveEnded.current(elements)
+  };
+  const _setAnimationEnded = () => {
+    setAnimating(false);
+  }
   const _checkOverlap: (id: string, verticalOffset: number) => void = (
     id: string,
     verticalOffset: number
@@ -154,7 +176,6 @@ function useReorderableManager(list: any[]): ReorderableManager {
           elements[position - 1].layout.height -
           10
       ) {
-        console.log('moving up')
         _moveElement(position, position - 1);
         return;
       }
@@ -162,7 +183,6 @@ function useReorderableManager(list: any[]): ReorderableManager {
     if (position !== elements.length - 1) {
       // IF it is the bottom, don't check if it should go down
       if (layout.y + verticalOffset > elements[position + 1].layout.y + 10) {
-        console.log('moving down')
         _moveElement(position, position + 1);
         return;
       }
@@ -172,11 +192,14 @@ function useReorderableManager(list: any[]): ReorderableManager {
     setElements([...elements, ...createReorderableElement([item])]);
   };
   const _setItems = (itemList) => {
+    // console.log('new:', itemList);
     const newList = createReorderableElement(itemList);
     const mergedList = newList.map((newEl) => {
       const oldEl = elements.find((curr) => curr.id === newEl.id);
+      if (oldEl) oldEl.val = newEl.val;
       return oldEl || newEl;
     });
+    // console.log('merged:', mergedList)
     setElements(mergedList);
   };
 
@@ -208,7 +231,10 @@ function useReorderableManager(list: any[]): ReorderableManager {
     addItem: _addItem,
     setItems: _setItems,
     calculateOffset,
-    isMoving: false,
+    onMoveEnded: _onMoveEnded,
+    setAnimationEnded: _setAnimationEnded,
+    isMoving: moving,
+    isAnimating: animating,
     elements,
   };
 }

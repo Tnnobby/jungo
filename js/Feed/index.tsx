@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -7,14 +7,16 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
-import useFirebaseRecipes from "../hooks/useFirebaseRecipes";
-import useOverlay from "../api/useOverlay";
 import { LargeHeader } from "../components/header";
 import FullSizeRecipeCard from "../components/RecipeCards/FullSizeRecipeCard";
 import { Recipe } from "../api/firebase";
 import NavigationPage from "../components/NavigationPage";
 import { RootPageProps } from "../../routes/routes";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useFirebaseRecipes from "../api/useFirebaseRecipes";
+import { RefreshController } from "../components/RefreshController";
+import { RefreshControl } from "react-native-gesture-handler";
+import { LARGE_HEADER_HEIGHT } from "../components/header/large";
 
 const styles = StyleSheet.create({
   main: {
@@ -38,24 +40,24 @@ interface FeedPageProps extends RootPageProps<"home"> {}
 
 export default function FeedPage({ navigation, ...props }: FeedPageProps) {
   const headerShadow = useRef(new Animated.Value(0)).current;
-  const insets = useSafeAreaInsets();
+  const [refreshing, setRefreshing] = useState<boolean>(false)
   const { getRecipes, recipes } = useFirebaseRecipes();
 
   useEffect(() => {
     getRecipes();
   }, []);
 
+  const refreshHandle = () => {
+    setRefreshing(true)
+    getRecipes()
+      .then(() => setRefreshing(false))
+  }
+
   const openViewRecipe = (data: Recipe) => {
     navigation.navigate("view-recipe", { data });
   };
 
   const openSearch = () => {
-    // setOverlay({
-    //   type: "fullpage",
-    //   overlayElement: <SearchOverlay />,
-    //   transitionIn: 'swipeLeft',
-    //   transitionOut: 'swipeRight'
-    // })
     navigation.navigate("search");
   };
 
@@ -118,6 +120,13 @@ export default function FeedPage({ navigation, ...props }: FeedPageProps) {
         scrollEventThrottle={20}
         showsVerticalScrollIndicator={false}
         onLayout={(ev) => console.log(ev.nativeEvent.layout)}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refreshHandle}
+            progressViewOffset={LARGE_HEADER_HEIGHT / 2}
+          />
+        }
       >
         <View style={styles.wrapper}>
           {recipes &&

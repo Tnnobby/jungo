@@ -1,7 +1,7 @@
-import { useCallback, useState, createContext, useEffect } from "react";
+import { useCallback, useState, createContext } from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import { Error } from "./Error";
-import { ErrorContextProps, ErrorLevel, ErrorTemplate } from "./types";
+import { ErrorContextProps, ErrorTemplate } from "./types";
 
 interface ErrorHandlerProps {
   children?: React.ReactNode;
@@ -10,8 +10,8 @@ interface ErrorHandlerProps {
 const styles = StyleSheet.create({
   main: {
     position: "absolute",
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width - 40,
+    height: Dimensions.get("screen").height,
+    width: Dimensions.get("screen").width - 40,
     marginHorizontal: 20,
     zIndex: 100,
   },

@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from "react";
 import {
   Dimensions,
   Image,
@@ -9,8 +8,6 @@ import {
   Text,
   View,
 } from "react-native";
-import { useDispatch } from "react-redux";
-import { setUserInfo } from "../../../redux/reducers/userReducer";
 import { useLoginContext } from "../../context-providers/LoginContextType";
 import { LoginPageProps } from "../../../routes/routes";
 import useAuth from "../../api/useAuth";

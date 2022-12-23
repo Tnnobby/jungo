@@ -1,7 +1,7 @@
 import React, { ReactNode, useContext, useEffect, useState } from "react";
 import { ActivitySetting } from "../components/form/FormRadioGroup";
 import { JungoUser } from "./FirebaseProvider";
-import useFirebase from "../hooks/useFirebase";
+import useFirebase from "../api/useFirebase";
 
 type LoginContextValue = {
   user: JungoUser;

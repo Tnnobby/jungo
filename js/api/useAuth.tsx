@@ -1,22 +1,15 @@
-import { initializeApp } from "firebase/app";
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { doc, getDoc, setDoc, Timestamp } from "firebase/firestore";
+import { useContext } from "react";
 import {
-  doc,
-  getDoc,
-  getFirestore,
-  serverTimestamp,
-  setDoc,
-  Timestamp,
-} from "firebase/firestore";
-import { useEffect, useRef, useContext } from "react";
-import firebaseConfig from "../../firebase.config";
-import { FirebaseContext, UserDoc } from "../context-providers/FirebaseProvider";
+  FirebaseContext,
+  UserDoc,
+} from "../context-providers/FirebaseProvider";
 
-type LoginMethods = 'email'
+type LoginMethods = "email";
 
 export default function useAuth() {
   const { auth, db, actions } = useContext(FirebaseContext);
@@ -67,7 +60,7 @@ export default function useAuth() {
         created_at: Timestamp.now(),
         private: {
           birthday: Timestamp.fromDate(data.birthday),
-        }
+        },
       };
       setDoc(doc(db, "users", uid), userDoc)
         .then(() => {
@@ -78,13 +71,18 @@ export default function useAuth() {
           resolve(userDoc);
         })
         .catch((reason) => reject(reason));
-        
     });
+  };
+
+  const getUserInfo = async (uid: string) => {
+    const ref = doc(db, "users", uid);
+    return getDoc(ref).then((val) => val.data());
   };
 
   return {
     newUser,
     loginUser,
     createUserDoc,
+    getUserInfo,
   };
 }

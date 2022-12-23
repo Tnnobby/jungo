@@ -1,15 +1,13 @@
 import { useNavigation } from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
 import {
   forwardRef,
   useEffect,
   useImperativeHandle,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import {
-  Dimensions,
+  Keyboard,
   LayoutChangeEvent,
   LayoutRectangle,
   Pressable,
@@ -19,14 +17,11 @@ import {
 } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
-  Easing,
-  min,
   runOnJS,
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
   withSpring,
-  withTiming,
 } from "react-native-reanimated";
 
 interface BedsheetProps {
@@ -81,16 +76,17 @@ export const Bedsheet = forwardRef<BedsheetRef, BedsheetProps>(
     const open = (cb?: () => void) => {
       yOffset.value = withSpring(
         0,
-        {overshootClamping: true, mass: 0.15},
+        { overshootClamping: true, mass: 0.15 },
         (finished) => finished && cb && runOnJS(cb)()
       );
     };
     const close = (cb?: () => void) => {
+      Keyboard.dismiss();
       yOffset.value = withSpring(
         dimensions.height,
         {
           overshootClamping: true,
-          mass: 0.6
+          mass: 0.6,
         },
         (finished) => {
           finished && cb && runOnJS(cb)();

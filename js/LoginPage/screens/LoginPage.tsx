@@ -4,10 +4,12 @@ import { Keyboard } from "react-native";
 import { useAlert } from "../../hooks/useAlert";
 import useLoading from "../../hooks/useLoading";
 import { LoginPageProps } from "../../../routes/routes";
+import useFirebase from "../../api/useFirebase";
 
 interface LoginMainPageProps extends LoginPageProps<"login-form"> {}
 export default function LoginMainPage({ navigation }: LoginMainPageProps) {
   const { loginUser } = useAuth();
+  const { user, actions } = useFirebase();
   const loading = useLoading();
   const { error } = useAlert();
 
@@ -22,13 +24,15 @@ export default function LoginMainPage({ navigation }: LoginMainPageProps) {
       .then((val) => {
         // val && dispatch(setUserInfo(val));
         loading.close();
-        const parent = navigation.getParent();
-        if (parent) parent.navigate("home");
-        else
-          error({
-            message: "There was an error navigating to your feed.",
-            key: "login_nav_error",
-          });
+        const listener = actions.addListener("DONE_FETCHING", (success) => {
+          if (!success) {
+            console.log('Fetching Result:', success)
+            console.log('User Has Doc:', user.hasDoc)
+            listener.remove()
+            navigation.navigate("signup-info");
+            
+          }
+        });
       })
       .catch((e) => {
         switch (e.code) {

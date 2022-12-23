@@ -1,9 +1,7 @@
-import { useNavigation } from "@react-navigation/native";
 import { useRef } from "react";
 import { useState } from "react";
 import { Image, Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
 import FormInput from "../../components/form/FormInput";
-
 import LoginButton from "../../components/LoginButton";
 import {
   AppleSignIn,
@@ -11,9 +9,7 @@ import {
   GoogleSignIn,
 } from "../../components/loginButtons/LoginMethodButton";
 import NavigationPage from "../../components/NavigationPage";
-import Page from "../../Page";
 import CloseX from "../../svg/jsx/CloseX";
-import ContinueArrow from "../../svg/jsx/ContinueArrow";
 
 const styles = StyleSheet.create({
   main: {

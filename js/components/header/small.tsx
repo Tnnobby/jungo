@@ -1,5 +1,4 @@
 import {
-  Dimensions,
   Pressable,
   StyleSheet,
   Text,
@@ -8,12 +7,9 @@ import {
 } from "react-native";
 import BackChevron from "../../svg/jsx/BackChevron";
 import CloseX from "../../svg/jsx/CloseX";
-import { useDispatch } from "react-redux";
-import { backPage } from "../../../redux/reducers/navigationReducer.old";
 import { useNavigation } from "@react-navigation/native";
 import Animated, {
   SharedValue,
-  useAnimatedProps,
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

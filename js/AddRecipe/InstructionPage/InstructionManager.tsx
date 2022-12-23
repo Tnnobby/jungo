@@ -12,8 +12,6 @@ import { AddStep } from "./AddStep";
 import { DeleteButton } from "./DeleteButton";
 import InstructionItem from "./InstructionItem";
 
-const NULL_PLACEHOLDER = "NEW_DESCRIPTION";
-
 export default function InstructionManager({ ...props }) {
   const instructions = useSelector(selectInstructions);
   const navigation = useNavigation<NavigationProp<AddRecipeStack>>();

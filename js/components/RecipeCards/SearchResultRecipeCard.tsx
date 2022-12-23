@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 import { View, StyleSheet, Image, Text } from "react-native";
 import { useFirebaseImage } from "../../api/useFirebaseImage";
 import { NutritionFact } from "../../ViewRecipe/NutritionFact";
 import StatefulPressable from "../StatefulPressable";
-import { RecipeData } from '../../types/RecipeTypes';
+import { RecipeData } from "../../types/RecipeTypes";
+import { Recipe } from "../../api/firebase";
 
 const styles = StyleSheet.create({
   main: {
@@ -18,22 +19,22 @@ const styles = StyleSheet.create({
   },
   photo: {
     borderRadius: 9,
-    marginRight: 10
+    marginRight: 10,
   },
   title: {
     fontSize: 18,
-    fontFamily: 'Rubik_500'
+    fontFamily: "Rubik_500",
   },
   detailsColumn: {
-    flexDirection: 'column',
-    justifyContent: 'space-evenly'
+    flexDirection: "column",
+    justifyContent: "space-evenly",
   },
   nutritionRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   fact: {
-    marginRight: 6
-  }
+    marginRight: 6,
+  },
 });
 
 const DATA = {
@@ -50,19 +51,32 @@ const DATA = {
   },
 };
 
-export default function SearchResultRecipeCard({ onPress = (data: RecipeData) => {}, data, ...props }) {
-  const { imgUrl, getImg } = useFirebaseImage()
+type SearchResultRecipeCardProps = {
+  onPress?: (data: Recipe) => void;
+  data: Recipe;
+};
+
+export default function SearchResultRecipeCard({
+  onPress,
+  data,
+}: SearchResultRecipeCardProps) {
+  const { imgUrl, getImg } = useFirebaseImage();
 
   useEffect(() => {
-    getImg(data.details.photo)
-  }, [])
+    getImg(data.details.photo);
+  }, []);
 
-  const pressHandle = () => onPress(data)
+  const pressHandle = () => onPress(data);
 
-  if (!data.details) return <></>
+  if (!data.details) return <></>;
   return (
     <StatefulPressable style={styles.main} onPress={pressHandle}>
-      {imgUrl && <Image style={styles.photo} source={{ uri: imgUrl, width: 58, height: 58 }} />}
+      {imgUrl && (
+        <Image
+          style={styles.photo}
+          source={{ uri: imgUrl, width: 58, height: 58 }}
+        />
+      )}
       <View style={styles.detailsColumn}>
         <Text style={styles.title}>{data.details.title}</Text>
         <View style={styles.nutritionRow}>

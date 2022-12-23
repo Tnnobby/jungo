@@ -1,6 +1,7 @@
 import { LayoutRectangle, StyleSheet, LayoutChangeEvent } from "react-native";
 import Animated, {
   Layout,
+  runOnJS,
   SlideInLeft,
   SlideInRight,
   useAnimatedProps,
@@ -9,8 +10,9 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import { ReorderableManager } from "./useReorderableManager";
 import useWrappedManager from "./useWrappedManager";
+import { useEffect } from "react";
+import { ReorderableManager } from "./reorderable";
 
 export type ReorderableItemProps = {
   children?: React.ReactNode;
@@ -18,6 +20,7 @@ export type ReorderableItemProps = {
   onMoveEnd?: (id: string) => void;
   id: string;
   manager?: ReorderableManager;
+  reordering: boolean
 };
 
 export default function ReorderableItem({
@@ -26,6 +29,7 @@ export default function ReorderableItem({
   onMoveEnd,
   id,
   manager,
+  reordering
 }: ReorderableItemProps) {
   const position = useSharedValue(0);
   const raiseStyles = useSharedValue({
@@ -36,11 +40,9 @@ export default function ReorderableItem({
   const wrappedManager = useWrappedManager(manager, id);
   const gesture = Gesture.Pan()
     .runOnJS(true)
-    .shouldCancelWhenOutside(false)
-    .cancelsTouchesInView(true)
     .activateAfterLongPress(500)
     .onBegin(() => {
-      console.log('begin')
+      console.log('reorder begin')
     })
     .onStart(() => {
       console.log('start')
@@ -60,9 +62,6 @@ export default function ReorderableItem({
         ev.translationY + wrappedManager.calculateOffset()
       );
     })
-    // .onTouchesCancelled((ev) => {
-    //   console.log(ev)
-    // })
     .onEnd((ev) => {
       console.log('moving ended')
       raiseStyles.value = {
@@ -70,7 +69,7 @@ export default function ReorderableItem({
         scale: 1,
         zIndex: 1,
       };
-      position.value = 0;
+      position.value = withSpring(0, { mass: 0.5 }, () => runOnJS(manager.setAnimationEnded)())
       wrappedManager.setMovingEnded();
     });
   const moveHandle = () => {
@@ -85,25 +84,27 @@ export default function ReorderableItem({
       transform: [
         { scale: withTiming(raiseStyles.value.scale, { duration: 150 }) },
         {
-          translateY:
-            position.value === 0
-              ? withSpring(position.value, { mass: 0.5 })
-              : position.value,
+          translateY: position.value
         },
       ],
       elevation: withTiming(raiseStyles.value.elevation, { duration: 150 }),
       zIndex: raiseStyles.value.zIndex,
     };
-  });
+  }, [manager.setAnimationEnded]);
 
   const layoutHandle = (ev: LayoutChangeEvent) =>
     wrappedManager.setLayout(ev.nativeEvent.layout);
+
+  useEffect(() => {
+    console.log(reordering);
+    
+  }, [reordering])
 
   return (
     <Animated.View
       style={[styles.container, animatedStyles]}
       onLayout={layoutHandle}
-      layout={Layout.springify().mass(0.5)}
+      layout={reordering ? Layout.springify().mass(0.5) : undefined}
       collapsable={false}
     >
       <GestureDetector gesture={gesture}>{children}</GestureDetector>

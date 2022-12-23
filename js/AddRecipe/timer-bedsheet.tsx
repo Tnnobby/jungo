@@ -1,6 +1,6 @@
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useCallback, useRef, useState } from "react";
-import { Platform, View } from "react-native";
+import { Platform } from "react-native";
 import { useDispatch } from "react-redux";
 import { setNewRecipeField } from "../../redux/reducers/newRecipeReducer";
 import { AddRecipePageProps } from "../../routes/routes";

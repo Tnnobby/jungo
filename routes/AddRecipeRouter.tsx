@@ -17,13 +17,23 @@ export type ModalProps<T> = {
   initialValue: T;
 };
 
+type TimeFields = 'cooktime' | 'preptime'
+
+export interface TimerBedsheetProps extends BedsheetProps<{ hours: number; minutes: number }> {
+  fieldName: TimeFields
+}
+
 export type AddRecipeStack = {
   pageone: undefined;
   pagetwo: undefined;
-  "timer-bedsheet": BedsheetProps<{ hours: number; minutes: number }>;
+  "timer-bedsheet": TimerBedsheetProps;
   "nutrition-bedsheet": BedsheetProps<NutritionFacts>;
   "temperature-bedsheet": BedsheetProps<number>;
-  "instruction-modal": ModalProps<{ id: string; value: string }>;
+  "instruction-modal": ModalProps<{
+    id: string;
+    value: string;
+    newInstruction?: boolean;
+  }>;
 };
 
 const AddRecipe = createNativeStackNavigator<AddRecipeStack>();

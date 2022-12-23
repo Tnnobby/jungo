@@ -1,5 +1,6 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import {
+  GestureResponderEvent,
   Pressable,
   StyleProp,
   StyleSheet,
@@ -18,11 +19,16 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(
 
     useImperativeHandle(ref, () => innerRef.current);
 
-    const focusInput = () => innerRef.current.focus();
+    const focusInput = (ev: GestureResponderEvent) => innerRef.current.focus()
 
     return (
       <Pressable onPress={focusInput} style={[styles.pressable, outerStyle]}>
-        <TextInput ref={innerRef} style={[styles.input, style]} textAlignVertical='top' {...props} />
+        <TextInput
+          ref={innerRef}
+          style={[styles.input, style]}
+          textAlignVertical="top"
+          {...props}
+        />
       </Pressable>
     );
   }
@@ -30,7 +36,8 @@ export const TextArea = forwardRef<TextInput, TextAreaProps>(
 
 const styles = StyleSheet.create({
   pressable: {
-    padding: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
     backgroundColor: "#F5F5F5",
     borderColor: "#B4B4B4",
     borderWidth: 1,

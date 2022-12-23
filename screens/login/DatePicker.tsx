@@ -2,11 +2,11 @@ import { useRef } from "react";
 import RNDateTimePicker, {
   DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
-import { StyleSheet, View } from "react-native";
-import ActionRow from "../Bedsheet/ActionRow";
-import { LoginPageProps } from "../../../routes/routes";
-import { Bedsheet, BedsheetRef } from "../Bedsheet/bedsheet";
-import { useLoginContext } from "../../context-providers/LoginContextType";
+import { StyleSheet } from "react-native";
+import ActionRow from "../../js/components/Bedsheet/ActionRow";
+import { LoginPageProps } from "../../routes/routes";
+import { Bedsheet, BedsheetRef } from "../../js/components/Bedsheet/bedsheet";
+import { useLoginContext } from "../../js/context-providers/LoginContextType";
 
 const styles = StyleSheet.create({
   main: {},
