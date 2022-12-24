@@ -229,9 +229,9 @@ export default function CameraOverlay({
                   ...styles.shutterContainer,
                   borderColor: cameraState !== "ready" ? "#afafaf" : "white",
                 }}
-                onPressIn={cameraState === "ready" && shutterPressIn}
-                onPressOut={cameraState === "ready" && shutterPressOut}
-                onPress={cameraState === "ready" && shutterPress}
+                onPressIn={cameraState === "ready" ? shutterPressIn : undefined}
+                onPressOut={cameraState === "ready" ? shutterPressOut : undefined}
+                onPress={cameraState === "ready" ? shutterPress : undefined}
               >
                 <Animated.View
                   style={{
