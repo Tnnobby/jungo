@@ -3,10 +3,11 @@ import ProfileHeader from "./ProfileHeader";
 import KitchenBody from "./KitchenBody";
 import ProfileTabHeader from "./ProfileTabHeader";
 import FloatingAddButton from "../components/AddButton";
-import Page from "../Page";
 import { Header } from "../components/header";
-import { useNavigation } from "../hooks/useNavigation";
 import { UserDoc } from "../context-providers/FirebaseProvider";
+import { RootPageProps } from "../../routes/routes";
+import NavigationPage from "../components/NavigationPage";
+import { SettingsButton } from "../components/buttons/SettingsButton";
 
 const TEST_DATA = {
   user_id: 1,
@@ -36,39 +37,32 @@ const styles = StyleSheet.create({
   },
 });
 
-interface ProfilePageProps {
-  data: UserDoc
+interface ProfilePageProps extends RootPageProps<"profile"> {
+  data: UserDoc;
+  myProfile: boolean;
 }
 
-const ProfilePage = ({ data, ...props }: ProfilePageProps) => {
-  // const [fontsLoaded] = useFonts({
-  //   NotoSans:Rubik_400Regular,
-  //   NotoSans_Bold:Rubik_700Bold
-  // })
-  const { toPage } = useNavigation();
+// TODO : Finish converting this to use navigation and routes props
+const ProfilePage = ({ data, myProfile, navigation, route }: ProfilePageProps) => {
 
   const onAddNewHandle = () => {
-    toPage({
-      toRoute: "add_recipe",
-    });
+    navigation.navigate('add-recipe')
   };
 
+  const settingsHandle = () => {
+    // actions.logout()
+    navigation.navigate('settings')
+  }
+
   return (
-    <Page
-      onAnimationEnd={undefined}
-      _onTransitionEnd={undefined}
-      useAnimatedProps={undefined}
-      transitionOptions={undefined}
-      id="profile"
-      keyboardSafe={false}
-      {...props}
-    >
+    <NavigationPage>
       <View style={styles.container}>
         <Header
-          backButton={true}
-          closeButton={true}
+          backButtonShown={true}
+          closeButtonShown={false}
           onBackPress={undefined}
           onClosePress={undefined}
+          rightComponent={myProfile && <SettingsButton onPress={settingsHandle}/>}
         />
         <ScrollView
           style={{
@@ -76,16 +70,20 @@ const ProfilePage = ({ data, ...props }: ProfilePageProps) => {
             width: "100%",
           }}
           showsVerticalScrollIndicator={false}
+          overScrollMode='never'
         >
-          <ProfileHeader firstName={data.first_name} lastName={data.last_name} />
+          <ProfileHeader
+            firstName={data.first_name}
+            lastName={data.last_name}
+          />
           <View style={styles.tabContainer}>
             <ProfileTabHeader />
           </View>
           <KitchenBody />
         </ScrollView>
-        <FloatingAddButton onPress={onAddNewHandle} />
+        {myProfile && <FloatingAddButton onPress={onAddNewHandle} />}
       </View>
-    </Page>
+    </NavigationPage>
   );
 };
 

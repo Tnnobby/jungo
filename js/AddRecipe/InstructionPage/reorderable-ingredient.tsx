@@ -1,114 +1,134 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   NativeSyntheticEvent,
+  Pressable,
   StyleSheet,
   TextInputFocusEventData,
-  Pressable,
+  TextInputProps,
+  View,
   Text,
 } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { SlideOutLeft } from "react-native-reanimated";
+import { useDispatch } from "react-redux";
+import { removeIngredient } from "../../../redux/reducers/newRecipeReducer";
+import { DeleteButton } from "./DeleteButton";
+import { ScaleDecorator } from "react-native-draggable-flatlist";
 import SwipeableItem from "../../components/Swipeable";
-import DeleteIcon from "../../svg/jsx/DeleteIcon";
 
-interface IngredientItemProps {
+interface IngredientItemProps extends TextInputProps {
   value?: string;
+  index?: number;
   inputChangeHandle?: (text: string) => void;
   inputFocusHandle?: (e: NativeSyntheticEvent<TextInputFocusEventData>) => void;
+  onLongPress?: () => void;
 }
 
 export default function IngredientItem({
   value,
+  index,
   inputChangeHandle,
   inputFocusHandle,
+  onLongPress,
+  ...props
 }: IngredientItemProps) {
   const inputRef = useRef<TextInput>();
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const dispatch = useDispatch();
 
-  const editTrigger = () => {
-    console.log("edit");
-    inputRef.current.focus();
+  const focus = () => {
+    setIsEditing(true);
+    // inputRef.current.focus();
   };
 
-  console.log(value);
+  useEffect(() => {
+    if (!inputRef.current) return;
+    if (isEditing) setTimeout(() => inputRef.current.focus(), 50);
+    if (!isEditing) inputRef.current.blur();
+  }, [isEditing]);
+
+  const deleteHandle = () => {
+    dispatch(removeIngredient(index));
+  };
+
+  const longPressHandle = () => {
+    console.log("should drag");
+    onLongPress();
+  };
 
   return (
-    <SwipeableItem rightElement={<DeleteButton />}>
-      <Pressable style={styles.pressableInput} onPress={editTrigger}>
-        <TextInput
-          style={
-            isEditing ? { ...styles.input, ...styles.focus } : styles.input
-          }
-          ref={inputRef}
-          selectionColor="black"
-          defaultValue={value}
-          editable={isEditing}
-          onChangeText={inputChangeHandle}
-          onFocus={inputFocusHandle}
-        />
-      </Pressable>
-    </SwipeableItem>
+    <ScaleDecorator>
+      <SwipeableItem
+        rightElement={<DeleteButton onPress={deleteHandle} />}
+        exiting={SlideOutLeft}
+      >
+        <Pressable
+          onLongPress={longPressHandle}
+          onPress={focus}
+          style={styles.pressableInput}
+        >
+          {isEditing ? (
+            <TextInput
+              style={[styles.idle, styles.focus]}
+              ref={inputRef}
+              selectionColor="black"
+              defaultValue={value || undefined}
+              placeholder="New Ingredient"
+              onChangeText={inputChangeHandle}
+              onFocus={inputFocusHandle}
+              enabled={isEditing}
+              editable={isEditing}
+              onBlur={() => setIsEditing(false)}
+              {...props}
+            />
+          ) : (
+            <View style={styles.idle}>
+              <Text
+                style={[
+                  styles.text,
+                  { color: value === "" ? "#C7C7CD" : "black" },
+                ]}
+              >
+                {value || "New Ingredient"}
+              </Text>
+            </View>
+          )}
+        </Pressable>
+      </SwipeableItem>
+    </ScaleDecorator>
   );
 }
 
-export const DeleteButton = ({ onPress = () => {}, ...props }) => (
-  <LinearGradient
-    colors={["#EDEDED", "#FFFFFF"]}
-    start={{ x: 1, y: 0.5 }}
-    end={{ x: 0.7, y: 0.5 }}
-    style={styles.backdrop}
-  >
-    <Pressable
-      style={{
-        ...styles.deletePressable,
-      }}
-      onPress={onPress}
-      {...props}
-    >
-      <DeleteIcon />
-      <Text style={styles.deleteText}>Delete</Text>
-    </Pressable>
-  </LinearGradient>
-);
-
 const styles = StyleSheet.create({
-  input: {
-    color: "black",
-    fontFamily: "Rubik_500",
-    fontSize: 18,
-    lineHeight: 20,
+  idle: {
     width: "100%",
     height: 28,
     borderBottomColor: "white",
     borderBottomWidth: 1,
+    // backgroundColor: 'blue',
+    justifyContent: "center",
+    paddingTop: 2,
+  },
+  text: {
+    color: "black",
+    fontFamily: "Rubik_500",
+    fontSize: 18,
+    lineHeight: 20,
   },
   focus: {
-    borderBottomColor: "#383838",
+    borderBottomColor: "black",
     borderBottomWidth: 1,
-    marginVertical: 3,
+    marginVertical: 0,
+    color: "black",
+    fontFamily: "Rubik_500",
+    fontSize: 18,
+    lineHeight: 20,
+    // backgroundColor: 'red'
   },
-  pressableInput: { width: "100%", backgroundColor: "white" },
-  // Delete Styles
-  backdrop: {
-    position: "absolute",
-    flexDirection: "row",
-    alignItems: "center",
+  pressableInput: {
     width: "100%",
-    height: "100%",
-    justifyContent: "flex-end",
-    zIndex: 4,
-    borderRadius: 5,
-  },
-  deletePressable: {
-    paddingVertical: 2,
-    paddingLeft: 8,
-    paddingRight: 8,
-    flexDirection: "row",
-  },
-  deleteText: {
-    color: "#EF3232",
-    fontFamily: "Rubik_400",
-    zIndex: 1,
-    marginLeft: 3,
+    backgroundColor: "white",
+    paddingVertical: 4,
+    paddingHorizontal: 5
   },
 });

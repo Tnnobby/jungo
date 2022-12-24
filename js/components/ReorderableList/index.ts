@@ -1,3 +1,3 @@
-import Reorderable from "./reorderable";
+import {Reorderable} from "./reorderable";
 
 export default Reorderable

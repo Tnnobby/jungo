@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
   }
 })
 
-export default function CircleButton ({icon, style, ...props}) {
+export default function CircleButton ({icon, style = {}, ...props}) {
   return (
     <StatefulPressable style={{...styles.main, ...style}} {...props}>
       {icon && icon}

@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { Text } from "react-native";
 import TabHeader from "../components/tabbed/TabHeader";
-import constants from "../constants";
 import KitchenBody from "./KitchenBody";
-
-const CONSTANTS = {
-  inactiveColor: "#939393",
-  activeColor: constants.primary_color,
-};
 
 export default function ProfileTabHeader(props) {
   const [activeTab, setActiveTab] = useState("kitchen");

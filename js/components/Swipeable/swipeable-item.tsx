@@ -1,7 +1,8 @@
 import { cloneElement, useEffect, useMemo, useRef, useState } from "react";
-import { Dimensions, LayoutRectangle } from "react-native";
+import { Dimensions, LayoutRectangle, View, ViewProps } from "react-native";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
+  AnimateProps,
   SlideInLeft,
   SlideInRight,
   useAnimatedStyle,
@@ -9,7 +10,7 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-interface SwipeableItemProps {
+interface SwipeableItemProps extends AnimateProps<ViewProps> {
   leftElement?: JSX.Element;
   rightElement?: JSX.Element;
   children?: JSX.Element;
@@ -21,8 +22,10 @@ export default function SwipeableItem({
   rightElement,
   children,
   closed,
+  ...props
 }: SwipeableItemProps) {
   const [layout, setLayout] = useState<LayoutRectangle>(null);
+  const [loaded, setLoaded] = useState<boolean>(false);
   const leftButtonLayout = useSharedValue<LayoutRectangle>(null);
   const rightButtonLayout = useSharedValue<LayoutRectangle>(null);
   const xOffset = useSharedValue<number>(0);
@@ -63,10 +66,11 @@ export default function SwipeableItem({
           }
           if (
             Boolean(rightButtonLayout.value) &&
+            Boolean(layout) &&
             ev.translationX + xOffset.value + layout.width <
               rightButtonLayout.value.x
           ) {
-            xOffset.value = -rightButtonLayout.value.width
+            xOffset.value = -rightButtonLayout.value.width;
             return;
           }
           offset.value = withSpring(0, { mass: 0.5 });
@@ -93,17 +97,23 @@ export default function SwipeableItem({
   }, [closed]);
 
   const layoutHandle = (ev) => {
+    // console.log("layout", ev.nativeEvent.layout);
     setLayout(ev.nativeEvent.layout);
   };
   const leftLayoutHandle = (ev) => {
     leftButtonLayout.value = ev.nativeEvent.layout;
   };
   const rightLayoutHandle = (ev) => {
+    // console.log("rightLayout", ev.nativeEvent.layout);
     rightButtonLayout.value = ev.nativeEvent.layout;
   };
 
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
+
   return (
-    <Animated.View entering={SlideInLeft} exiting={SlideInRight}>
+    <Animated.View entering={loaded ? SlideInLeft : undefined} {...props}>
       {layout && (
         <Animated.View
           style={

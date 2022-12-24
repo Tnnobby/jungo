@@ -5,8 +5,10 @@ const styles = StyleSheet.create({
   main: {
     width: '100%',
     flexDirection: 'row',
-    height: 40,
-    marginVertical: 4
+    height: 46,
+    backgroundColor: 'white',
+    paddingVertical: 3,
+    paddingHorizontal: 5
   },
   infoCont: {
     flex: 1,

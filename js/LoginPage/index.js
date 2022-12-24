@@ -100,10 +100,6 @@ export default function LoginPage({ ...props }) {
       )
     };
   }, []);
-
-  useEffect(() => {
-    initializeTransition(pages.splash) // pages.splash
-  }, []);
   
   return <>{render && render}</>;
 }

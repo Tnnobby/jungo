@@ -35,7 +35,6 @@ const styles = StyleSheet.create({
 });
 
 export default function FormRadio({
-  defaultValue,
   label,
   color = SETTINGS.defaultColor,
   innerColor = SETTINGS.defaultColor,

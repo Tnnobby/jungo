@@ -1,11 +1,12 @@
 import { SmallHeader } from "../header";
-import { View, StyleSheet, Text, FlatList } from "react-native";
+import { View, StyleSheet, Text, FlatList, TextInputChangeEventData, NativeSyntheticEvent } from "react-native";
 import Search from "../Search";
 import SearchResultRecipeCard from "../RecipeCards/SearchResultRecipeCard";
-import useFirebase from "../../api/useFirebase";
-import useOverlay from "../../api/useOverlay";
-import ViewRecipe from "./ViewRecipe";
-import { RecipeData } from "../../types/RecipeTypes";
+import NavigationPage from "../NavigationPage";
+import { RootPageProps } from "../../../routes/routes";
+import { useEffect } from "react";
+import { Recipe } from "../../api/firebase";
+import useFirebaseRecipes from "../../api/useFirebaseRecipes";
 
 const styles = StyleSheet.create({
   main: {
@@ -13,7 +14,7 @@ const styles = StyleSheet.create({
   },
   bodyHead: {
     flexDirection: "column",
-    marginVertical: 20
+    marginVertical: 20,
   },
   headText: {
     fontFamily: "Rubik_500",
@@ -22,54 +23,57 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function SearchOverlay({ close, ...props }) {
-  const { recipes, searchRecipes, clearRecipes } = useFirebase()
-  const { overlay, setOverlay} = useOverlay()
+interface SearchOverlayProps extends RootPageProps<"search"> {}
 
-  const backHandle = () => {
-    close();
+export default function SearchOverlay({
+  navigation,
+  ...props
+}: SearchOverlayProps) {
+  const { searchResults, searchRecipes, clearRecipes } = useFirebaseRecipes();
+
+  const searchHandle = (ev: NativeSyntheticEvent<TextInputChangeEventData>) => {
+    const val = ev.nativeEvent.text
+
+    if (val === "") {
+      clearRecipes();
+    } else {
+      searchRecipes(val.toLowerCase());
+    }
   };
 
-  const searchHandle = (val: string) => {
-    if (val === '') {
-      clearRecipes()
-    } else {
-      searchRecipes(val.toLowerCase())
-    }
-  }
+  const cardHandle = (data: Recipe) => {
+    navigation.navigate('view-recipe', {data})
 
-  const cardHandle = (data: RecipeData) => {
-    setOverlay({
-      type: 'fullpage',
-      overlayElement: <ViewRecipe data={data}/>,
-      transitionIn: 'swipeUp',
-      transitionOut: 'swipeDown',
-      useHeader: false,
-      transitionSettings: {
-        transitionIn: 'swipeUp',
-        transitionOut: 'swipeDown',
-        transitionTiming: 200,
-      }
-    })
-  }
+    // setOverlay({
+    //   type: "fullpage",
+    //   overlayElement: <ViewRecipe data={data} />,
+    //   transitionIn: "swipeUp",
+    //   transitionOut: "swipeDown",
+    //   useHeader: false,
+    //   transitionSettings: {
+    //     transitionIn: "swipeUp",
+    //     transitionOut: "swipeDown",
+    //     transitionTiming: 200,
+    //   },
+    // });
+  };
 
   return (
-    <View style={{height:'100%'}}>
-      <>
-        <SmallHeader backButton={true} backText="Home" onBackPress={backHandle} />
-        <View style={styles.main}>
-          <View style={styles.bodyHead}>
-            <Text style={styles.headText}>Search</Text>
-            <Search onChangeText={searchHandle}/>
-          </View>
-          <FlatList
-            data={recipes && recipes}
-            renderItem={(item) => <SearchResultRecipeCard data={item.item} onPress={cardHandle}/>}
-            showsVerticalScrollIndicator={false}
-          />
+    <NavigationPage>
+      <SmallHeader backButtonShown={true} backText="Home"/>
+      <View style={styles.main}>
+        <View style={styles.bodyHead}>
+          <Text style={styles.headText}>Search</Text>
+          <Search onChange={searchHandle} />
         </View>
-      </>
-      {overlay}
-    </View>
+        <FlatList
+          data={searchResults && searchResults}
+          renderItem={(item) => (
+            <SearchResultRecipeCard data={item.item} onPress={cardHandle} />
+          )}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+    </NavigationPage>
   );
 }
