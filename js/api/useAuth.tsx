@@ -58,9 +58,6 @@ export default function useAuth() {
       const userDoc: UserDoc = {
         ...data,
         created_at: Timestamp.now(),
-        private: {
-          birthday: Timestamp.fromDate(data.birthday),
-        },
       };
       setDoc(doc(db, "users", uid), userDoc)
         .then(() => {

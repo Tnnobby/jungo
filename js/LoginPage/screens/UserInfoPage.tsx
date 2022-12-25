@@ -12,7 +12,7 @@ import { useLoginContext } from "../../context-providers/LoginContextType";
 import { LoginPageProps } from "../../../routes/routes";
 import useAuth from "../../api/useAuth";
 import FormDateInput from "../../components/form/FormDateInput";
-import FormInput from "../../components/form/FormInput";
+import { FormInput } from "../../components/form/FormInput";
 import { FormRadioGroup } from "../../components/form/FormRadioGroup";
 import NavigationPage from "../../components/NavigationPage";
 import { colors, shadows } from "../../constants";
@@ -160,7 +160,9 @@ const UserInfoPage: React.FC<UserInfoPageProps> = ({ navigation, route }) => {
         last_name: lastName,
         username: username,
         activity_setting: activitySetting.value,
-        birthday: birthday,
+        private: {
+          birthday: birthday
+        },
       },
     };
     createUserDoc(_data)
