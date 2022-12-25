@@ -10,6 +10,7 @@ import {
   Keyboard,
   LayoutChangeEvent,
   LayoutRectangle,
+  Platform,
   Pressable,
   StyleSheet,
   useWindowDimensions,
@@ -46,6 +47,7 @@ export const Bedsheet = forwardRef<BedsheetRef, BedsheetProps>(
 
     //#region declare animated values
     const yOffset = useSharedValue<number>(dimensions.height);
+    const keyboardOffset = useSharedValue<number>(0);
     const opacity = useDerivedValue(() => {
       return (1 - yOffset.value / dimensions.height) * 0.4;
     });
@@ -71,6 +73,27 @@ export const Bedsheet = forwardRef<BedsheetRef, BedsheetProps>(
           }),
       [bedsheetLayout]
     );
+
+    useEffect(() => {
+      if (Platform.OS === "ios") {
+        const show = Keyboard.addListener("keyboardWillShow", (ev) => {
+          keyboardOffset.value = withSpring(ev.endCoordinates.height, {
+            mass: 0.5,
+            overshootClamping: true,
+          });
+        });
+        const hide = Keyboard.addListener("keyboardWillHide", (ev) => {
+          keyboardOffset.value = withSpring(0, {
+            mass: 0.5,
+            overshootClamping: true,
+          });
+        });
+        return () => {
+          show.remove();
+          hide.remove();
+        };
+      }
+    }, []);
 
     //#region declare custom ref values
     const open = (cb?: () => void) => {
@@ -121,6 +144,7 @@ export const Bedsheet = forwardRef<BedsheetRef, BedsheetProps>(
           },
         ],
         paddingBottom: yOffset.value < 0 ? Math.min(-yOffset.value, 100) : 0,
+        bottom: keyboardOffset.value,
       };
     });
     const animatedBackdropStyles = useAnimatedStyle(() => {
