@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
 import { colors } from "../constants";
 import ContinueArrow from "../svg/jsx/ContinueArrow";
-import StatefulPressable from "./StatefulPressable";
 
 const styles = StyleSheet.create({
   submitBtn: {
@@ -27,10 +26,10 @@ const styles = StyleSheet.create({
 })
 
 export default LoginButton = (props) => (
-  <StatefulPressable style={styles.submitBtn} {...props}>
+  <Pressable style={styles.submitBtn} {...props}>
     <Text style={styles.submitTxt}>Continue</Text>
     <View style={styles.arrowCont}>
       <ContinueArrow />
     </View>
-  </StatefulPressable>
+  </Pressable>
 );

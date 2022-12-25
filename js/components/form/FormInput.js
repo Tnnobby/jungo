@@ -1,8 +1,6 @@
-import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
-import StatefulPressable from "../StatefulPressable";
+import { StyleSheet, TextInput, Pressable } from "react-native";
 
 const styles = StyleSheet.create({
   main: {
@@ -45,7 +43,7 @@ export default function FormInput({
   const pressHandle = () => inputRef.current.focus();
 
   return (
-    <StatefulPressable
+    <Pressable
       style={invalid ? {
         ...styles.main,
         width: fullWidth ? "100%" : undefined,
@@ -59,6 +57,6 @@ export default function FormInput({
       onPress={pressHandle}
     >
       <TextInput ref={inputRef} {...props}/>
-    </StatefulPressable>
+    </Pressable>
   );
 }

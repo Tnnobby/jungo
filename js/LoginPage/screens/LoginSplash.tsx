@@ -1,8 +1,7 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { LoginPageProps } from "../../../routes/routes";
 import NavigationPage from "../../components/NavigationPage";
-import StatefulPressable from "../../components/StatefulPressable";
-import { colors } from "../../constants";
+import { colors, shadows } from "../../constants";
 
 const styles = StyleSheet.create({
   main: {
@@ -29,7 +28,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 300,
     borderRadius: 100,
-    elevation: 5,
+    ...shadows.elevation2
   },
   signupTxt: {
     fontSize: 24,
@@ -74,13 +73,21 @@ export default function LoginSplash({ navigation, route, ...props }: LoginSplash
         style={styles.splashImage}
         source={require("../LoginSplash.png")}
       />
-      <StatefulPressable
-        style={styles.signupBtn}
-        pressingStyle={{ elevation: 2 }}
+      <Pressable
+        style={(state) => {
+          if (state.pressed) {
+            return {
+              ...styles.signupBtn,
+              ...shadows.elevation0
+            }
+          } else {
+            return styles.signupBtn
+          }
+        }}
         onPress={onSignupPress}
       >
         <Text style={styles.signupTxt}>Sign Up</Text>
-      </StatefulPressable>
+      </Pressable>
       <View style={styles.loginRow}>
         <Text style={styles.loginDescription}>Already have an account? </Text>
         <Pressable style={styles.loginButton} onPress={onLoginPress}>

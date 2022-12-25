@@ -15,8 +15,7 @@ import FormDateInput from "../../components/form/FormDateInput";
 import FormInput from "../../components/form/FormInput";
 import { FormRadioGroup } from "../../components/form/FormRadioGroup";
 import NavigationPage from "../../components/NavigationPage";
-import StatefulPressable from "../../components/StatefulPressable";
-import { colors } from "../../constants";
+import { colors, shadows } from "../../constants";
 import useLoading from "../../hooks/useLoading";
 import CloseX from "../../svg/jsx/CloseX";
 import ContinueArrow from "../../svg/jsx/ContinueArrow";
@@ -81,18 +80,18 @@ const styles = StyleSheet.create({
     width: 46,
     backgroundColor: colors.button_color,
     borderRadius: 100,
-    elevation: 3,
     justifyContent: "center",
     alignItems: "center",
+    ...shadows.elevation2,
   },
   continueBtnCont: {
     flexDirection: "row",
     backgroundColor: colors.button_color,
     borderRadius: 100,
-    elevation: 3,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 14,
+    ...shadows.elevation2,
   },
   btnText: {
     color: "white",
@@ -107,7 +106,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     justifyContent: "space-between",
-    // backgroundColor: 'red'
   },
   arrowSize: {
     height: 20,
@@ -252,25 +250,41 @@ const UserInfoPage: React.FC<UserInfoPageProps> = ({ navigation, route }) => {
         </Pressable>
       </ScrollView>
       <View style={styles.floatingBtnRow}>
-        <StatefulPressable
-          style={styles.backBtnCont}
-          pressingStyle={{ elevation: 2 }}
+        <Pressable
+          style={(state) => {
+            if (state.pressed) {
+              return {
+                ...styles.backBtnCont,
+                ...shadows.elevation0,
+              };
+            } else {
+              return styles.backBtnCont;
+            }
+          }}
           onPress={backHandle}
         >
           <View style={styles.arrowSize}>
             <ContinueArrow style={{ transform: [{ rotate: "180deg" }] }} />
           </View>
-        </StatefulPressable>
-        <StatefulPressable
-          style={styles.continueBtnCont}
-          pressingStyle={{ elevation: 2 }}
+        </Pressable>
+        <Pressable
+          style={(state) => {
+            if (state.pressed) {
+              return {
+                ...styles.continueBtnCont,
+                ...shadows.elevation0,
+              };
+            } else {
+              return styles.continueBtnCont;
+            }
+          }}
           onPress={continueHandle}
         >
           <Text style={styles.btnText}>Continue</Text>
           <View style={styles.arrowSize}>
             <ContinueArrow />
           </View>
-        </StatefulPressable>
+        </Pressable>
       </View>
     </NavigationPage>
   );

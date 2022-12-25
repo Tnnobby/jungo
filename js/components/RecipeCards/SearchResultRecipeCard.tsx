@@ -1,8 +1,7 @@
 import { useEffect } from "react";
-import { View, StyleSheet, Image, Text } from "react-native";
+import { View, StyleSheet, Image, Text, Pressable } from "react-native";
 import { useFirebaseImage } from "../../api/useFirebaseImage";
 import { NutritionFact } from "../../ViewRecipe/NutritionFact";
-import StatefulPressable from "../StatefulPressable";
 import { Recipe } from "../../api/firebase";
 
 const styles = StyleSheet.create({
@@ -69,7 +68,7 @@ export default function SearchResultRecipeCard({
 
   if (!data.details) return <></>;
   return (
-    <StatefulPressable style={styles.main} onPress={pressHandle}>
+    <Pressable style={styles.main} onPress={pressHandle}>
       {imgUrl && (
         <Image
           style={styles.photo}
@@ -109,6 +108,6 @@ export default function SearchResultRecipeCard({
           />
         </View>
       </View>
-    </StatefulPressable>
+    </Pressable>
   );
 }

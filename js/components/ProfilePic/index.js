@@ -1,5 +1,4 @@
-import StatefulPressable from "../StatefulPressable"
-import { StyleSheet, Image } from 'react-native'
+import { StyleSheet, Image, Pressable } from 'react-native'
 
 const defaultPic = "https://m.media-amazon.com/images/M/MV5BNjZlODgzZTItZGRmYy00M2FhLWJjY2EtNjYyMzEzMWMwOWU2XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
 
@@ -16,7 +15,7 @@ const styles = StyleSheet.create({
 export default function ProfilePic ({...props}) {
 
   return (
-    <StatefulPressable style={styles.main} {...props}>
+    <Pressable style={styles.main} {...props}>
       <Image 
         source={{
           uri: defaultPic,
@@ -24,6 +23,6 @@ export default function ProfilePic ({...props}) {
           width: 48
         }}
       />
-    </StatefulPressable>
+    </Pressable>
   )
 }

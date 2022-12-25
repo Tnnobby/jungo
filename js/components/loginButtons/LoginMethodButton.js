@@ -1,7 +1,6 @@
-import { Animated, Dimensions, StyleSheet, Text, View } from "react-native";
+import { Animated, Dimensions, StyleSheet, Text, View, Pressable } from "react-native";
 import AppleLogo from "./AppleLogo";
 import GoogleLogo from "./GoogleLogo";
-import StatefulPressable from "../StatefulPressable";
 import FacebookLogo from "./FacebookLogo";
 import { useRef } from "react";
 import { useEffect } from "react";
@@ -81,7 +80,7 @@ function ExternalSigninButton({
         }),
       }}
     >
-      <StatefulPressable style={styles.content} {...props}>
+      <Pressable style={styles.content} {...props}>
         <View
           style={{
             ...styles.logoContainer,
@@ -101,7 +100,7 @@ function ExternalSigninButton({
         >
           {text}
         </Text>
-      </StatefulPressable>
+      </Pressable>
     </Animated.View>
   );
 }

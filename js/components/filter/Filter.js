@@ -5,7 +5,7 @@ import FilterItem from "./FilterItem";
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    marginBottom: 10,
+    marginVertical: 10,
     marginHorizontal: 20
   },
   textTitle: {
