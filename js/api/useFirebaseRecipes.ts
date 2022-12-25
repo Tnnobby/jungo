@@ -24,7 +24,7 @@ export default function useFirebaseRecipes() {
 
   const addRecipe = async (data: RecipeDetails) => {
     const id = v1();
-    let recipePhoto: string;
+    let recipePhoto: string = '';
     if (data.photo) {
       recipePhoto = (
         await addPhoto(data.photo, id)

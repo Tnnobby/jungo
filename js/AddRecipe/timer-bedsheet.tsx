@@ -25,7 +25,7 @@ export default function TimerBedsheet({
     fieldName,
   } = route.params;
   const bedsheetRef = useRef<BedsheetRef>();
-  const [time, setTime] = useState<Date>(initialTime(hours, minutes));
+  const time = useRef(initialTime(hours, minutes));
   const dispatch = useDispatch();
 
   console.log(navigation.canGoBack());
@@ -36,14 +36,26 @@ export default function TimerBedsheet({
   };
 
   const cancelHandle = () => close();
-  const doneHandle = (_time?: Date) => {
-    const newTime = _time || time
+
+  const androidDone = (_time?: Date) => {
     dispatch(
       setNewRecipeField({
         [fieldName]: {
-          hours: newTime.getHours(),
-          minutes: newTime.getMinutes(),
+          hours: _time.getHours(),
+          minutes: _time.getMinutes(),
         },
+      })
+    );
+    close();
+  };
+  const iosDone = () => {
+    const newTime = {
+      hours: time.current.getHours(),
+      minutes: time.current.getMinutes(),
+    };
+    dispatch(
+      setNewRecipeField({
+        [fieldName]: newTime,
       })
     );
     close();
@@ -58,9 +70,12 @@ export default function TimerBedsheet({
           locale="en_GB"
           is24Hour={true}
           themeVariant="light"
-          value={time}
+          value={time.current}
+          onChange={(ev, _time) => {
+            time.current = _time;
+          }}
         />
-        <ActionRow onCancel={cancelHandle} onDone={doneHandle} />
+        <ActionRow onCancel={cancelHandle} onDone={iosDone} />
       </Bedsheet>
     );
   }, []);
@@ -70,11 +85,11 @@ export default function TimerBedsheet({
       <RNDateTimePicker
         mode="time"
         display="clock"
-        value={time}
+        value={time.current}
         onError={() => console.log("error")}
         onChange={(ev, date) => {
           ev.type === "dismissed" && cancelHandle();
-          ev.type === "set" && doneHandle(date);
+          ev.type === "set" && androidDone(date);
         }}
         is24Hour={true}
       />

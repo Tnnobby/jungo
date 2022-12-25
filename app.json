@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "co.jungoapp.jungo-fresh",
+      "package": "co.jungoapp.jungofresh",
       "permissions": [
         "CAMERA"
       ]
