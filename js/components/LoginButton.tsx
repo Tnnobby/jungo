@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable, PressableProps } from "react-native";
 import { colors } from "../constants";
 import ContinueArrow from "../svg/jsx/ContinueArrow";
 
@@ -25,7 +25,11 @@ const styles = StyleSheet.create({
   }
 })
 
-export default LoginButton = (props) => (
+export interface LoginButtonProps extends PressableProps {
+
+}
+
+export const LoginButton = ({...props}: LoginButtonProps) => (
   <Pressable style={styles.submitBtn} {...props}>
     <Text style={styles.submitTxt}>Continue</Text>
     <View style={styles.arrowCont}>

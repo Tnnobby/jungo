@@ -1,8 +1,15 @@
 import { useRef } from "react";
 import { useState } from "react";
-import { Image, Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
-import FormInput from "../../components/form/FormInput";
-import LoginButton from "../../components/LoginButton";
+import {
+  Image,
+  Keyboard,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { FormInput } from "../../components/form/FormInput";
+import { LoginButton } from "../../components/LoginButton";
 import {
   AppleSignIn,
   FacebookSignIn,
@@ -67,14 +74,14 @@ const styles = StyleSheet.create({
 type LoginInfo = {
   username: string;
   password: string;
-}
+};
 
 interface LoginLayoutProps {
   welcomeMessage?: string;
   onSubmit?: (info: LoginInfo) => void;
   onClosePress?: () => void;
   onError?: (e: any) => void;
-  login?: boolean
+  login?: boolean;
 }
 
 export default function LoginLayout({
@@ -88,13 +95,13 @@ export default function LoginLayout({
   const [emailValue, setEmailValue] = useState(null);
   const [passwordValue, setPasswordValue] = useState(null);
   const [invalidFields, setInvalidFields] = useState([]);
-  const isSubmitted = useRef(false)
+  const isSubmitted = useRef(false);
 
   const onInputFocus = () => setIsTyping(true);
   const onInputBlur = () => setIsTyping(false);
 
   const submitHandle = () => {
-    Keyboard.dismiss()
+    Keyboard.dismiss();
     if (!isSubmitted.current) {
       setInvalidFields([]);
       if (emailValue === null) {
@@ -105,8 +112,8 @@ export default function LoginLayout({
       }
       if (invalidFields.length > 0) return;
       onSubmit && onSubmit({ username: emailValue, password: passwordValue });
-      isSubmitted.current = true
-      setTimeout(() => isSubmitted.current = false, 500)
+      isSubmitted.current = true;
+      setTimeout(() => (isSubmitted.current = false), 500);
     }
   };
 
@@ -130,7 +137,6 @@ export default function LoginLayout({
           {login ? "Log in" : "Sign up"} with your Email:
         </Text>
         <FormInput
-          id="email"
           placeholder="Email"
           invalid={invalidFields.includes("email")}
           invalidStyle={{
@@ -140,16 +146,13 @@ export default function LoginLayout({
           }}
           outerStyle={{ marginBottom: 10 }}
           style={styles.inputStyle}
-          textColor="black"
           textContentType="emailAddress"
           autoCorrect={false}
           onFocus={onInputFocus}
           onBlur={onInputBlur}
           onChangeText={setEmailValue}
-          
         />
         <FormInput
-          id="password"
           placeholder="Password"
           invalid={invalidFields.includes("password")}
           invalidStyle={{
@@ -160,7 +163,6 @@ export default function LoginLayout({
           outerStyle={{ marginBottom: 20 }}
           style={styles.inputStyle}
           secureTextEntry={true}
-          textColor="black"
           textContentType={login ? "password" : "newPassword"}
           autoCorrect={false}
           onFocus={onInputFocus}

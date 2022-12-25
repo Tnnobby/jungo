@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import FormRadio from "./FormRadio";
+import { FormRadio } from "./FormRadio";
 
 const styles = StyleSheet.create({
   main: {
@@ -14,15 +14,15 @@ export type ActivitySetting<T> = {
   index: number;
 };
 
-type FormRadioGroupProps<T> = {
-  items: T[];
-  onActiveChange?: (value: ActivitySetting<T>) => void;
+type FormRadioGroupProps = {
+  items: string[];
+  onActiveChange?: (value: ActivitySetting<string>) => void;
 };
 
-export function FormRadioGroup<T>({
+export function FormRadioGroup({
   items,
   onActiveChange,
-}: FormRadioGroupProps<T>) {
+}: FormRadioGroupProps) {
   const [active, setActive] = useState(null);
 
   const toggleHandle = (i: number) => {

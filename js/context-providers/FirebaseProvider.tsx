@@ -34,7 +34,6 @@ export interface FirebaseContextType {
 
 export interface UserDoc {
   activity_setting: string;
-  birthday: Timestamp;
   created_at: Timestamp;
   first_name: string;
   last_name: string;

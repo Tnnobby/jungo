@@ -1,8 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import { useEffect, useState } from "react";
-import FollowButton from "./FollowButton";
+import { useState } from "react";
+import { FollowButton } from "./FollowButton";
 import NotificationButton from "./NotificationButton";
-import { useLocalAssets } from "../hooks/useLocalAssets";
 import { useAssets } from "expo-asset";
 
 const styles = StyleSheet.create({

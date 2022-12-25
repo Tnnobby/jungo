@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Pressable } from 'react-native'
+import { StyleSheet, Image, Pressable, PressableProps } from 'react-native'
 
 const defaultPic = "https://m.media-amazon.com/images/M/MV5BNjZlODgzZTItZGRmYy00M2FhLWJjY2EtNjYyMzEzMWMwOWU2XkEyXkFqcGdeQXVyMjQwMDg0Ng@@._V1_.jpg"
 
@@ -12,11 +12,13 @@ const styles = StyleSheet.create({
   }
 })
 
-export default function ProfilePic ({...props}) {
+export interface ProfilePicProps extends PressableProps {
 
-  return (
+}
+
+export const ProfilePic = ({...props}: ProfilePicProps) => (
     <Pressable style={styles.main} {...props}>
-      <Image 
+      <Image
         source={{
           uri: defaultPic,
           height: 48,
@@ -25,4 +27,3 @@ export default function ProfilePic ({...props}) {
       />
     </Pressable>
   )
-}

@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
   },
 });
 
-interface ButtonProps extends PressableProps {
+export interface ButtonProps extends PressableProps {
   style: StyleProp<ViewStyle>
 }
 

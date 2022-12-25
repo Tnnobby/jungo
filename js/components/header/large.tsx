@@ -1,11 +1,18 @@
-import { View, StyleSheet, Text, Animated } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Animated,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import NotificationBell from "../../svg/jsx/NotificationBell";
 import SearchIcon from "../../svg/jsx/Search";
 import { CircleButton } from "../buttons";
-import ProfilePic from "../ProfilePic";
+import { ProfilePic } from "../ProfilePic";
 
-export const LARGE_HEADER_HEIGHT = 70
+export const LARGE_HEADER_HEIGHT = 70;
 
 const styles = StyleSheet.create({
   main: {
@@ -43,23 +50,29 @@ const styles = StyleSheet.create({
   },
 });
 
-
 type LargeHeaderProps = {
-  
-}
+  style?: StyleProp<ViewStyle>;
+  headerText?: string;
+  profilePic?: boolean;
+  onProfilePicPress?: () => void;
+  searchButton?: boolean;
+  onSearchPress?: () => void;
+  onNotificationPress?: () => void;
+  notificationButton?: boolean;
+  navColor?: string;
+};
 
-export default function LargeHeader({
+const LargeHeader = ({
   style,
   headerText,
   profilePic,
   onProfilePicPress,
   searchButton,
-  onSearchPress = () => {},
-  onNotificationPress = () => {},
+  onSearchPress,
+  onNotificationPress,
   notificationButton,
-  navColor = undefined,
-  ...props
-}) {
+  navColor,
+}: LargeHeaderProps) => {
   const insets = useSafeAreaInsets();
 
   return (
@@ -69,9 +82,7 @@ export default function LargeHeader({
       )}
       <View style={styles.row}>
         <View style={styles.frontGroup}>
-          {profilePic && (
-            <ProfilePic onPress={onProfilePicPress} />
-          )}
+          {profilePic && <ProfilePic onPress={onProfilePicPress} />}
           {headerText && <Text style={styles.headerText}>{headerText}</Text>}
         </View>
         <View style={styles.endGroup}>
@@ -100,4 +111,6 @@ export default function LargeHeader({
       </View>
     </Animated.View>
   );
-}
+};
+
+export default LargeHeader;

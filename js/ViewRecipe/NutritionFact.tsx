@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ViewProps } from "react-native";
 
 const styles = StyleSheet.create({
   item: {
@@ -18,15 +18,22 @@ const styles = StyleSheet.create({
   },
 });
 
+export interface NutritionFactProps extends ViewProps {
+  color?: string;
+  data?: number | string;
+  unit?: string;
+  fontSize?: number;
+}
+
 export const NutritionFact = ({
   color,
   data,
   unit,
-  style = {},
+  style,
   fontSize = 16,
   ...props
-}) => (
-  <View style={{ ...styles.nutritionRow, ...style }} {...props}>
+}: NutritionFactProps) => (
+  <View style={[ styles.nutritionRow, style ]} {...props}>
     <View style={{ ...styles.nutritionIndicator, backgroundColor: color }} />
     <Text style={{ ...styles.item, fontSize }}>
       {data} {unit}

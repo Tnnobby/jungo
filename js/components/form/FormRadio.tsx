@@ -12,37 +12,45 @@ const styles = StyleSheet.create({
   main: {
     width: "100%",
     marginTop: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 2
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 2,
   },
   toggleOuter: {
     height: SETTINGS.radioSize,
     width: SETTINGS.radioSize,
     borderRadius: 100,
     borderWidth: 2.5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
   },
   toggleInner: {
     borderRadius: 100,
   },
   label: {
-    fontFamily: 'Rubik_500',
-    fontSize: 22
+    fontFamily: "Rubik_500",
+    fontSize: 22,
   },
 });
 
-export default function FormRadio({
+export interface FormRadioProps {
+  label?: string;
+  color?: string;
+  innerColor?: string;
+  index: number;
+  toggleTrigger?: (index: number) => void;
+  active?: boolean;
+}
+
+export const FormRadio = ({
   label,
   color = SETTINGS.defaultColor,
   innerColor = SETTINGS.defaultColor,
   index,
   toggleTrigger,
   active,
-  ...props
-}) {
+}: FormRadioProps) => {
   const animateState = useRef(new Animated.Value(0)).current; // 0 if inactive, 1 if active
 
   useEffect(() => {
@@ -53,7 +61,7 @@ export default function FormRadio({
     }).start();
   }, [active]);
 
-  const trigger = () => toggleTrigger(index)
+  const trigger = () => toggleTrigger(index);
 
   return (
     <Pressable style={styles.main} onPress={trigger}>
@@ -76,4 +84,4 @@ export default function FormRadio({
       <Text style={styles.label}>{label}</Text>
     </Pressable>
   );
-}
+};

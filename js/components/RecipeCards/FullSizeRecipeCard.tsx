@@ -8,6 +8,7 @@ import {
   Image,
   useWindowDimensions,
 } from "react-native";
+import { HourMinuteTime, Recipe } from "../../api/firebase";
 import { useFirebaseImage } from "../../api/useFirebaseImage";
 import ChefHat from "../../svg/jsx/ChefHat";
 import { NutritionFact } from "../../ViewRecipe/NutritionFact";
@@ -85,12 +86,17 @@ const DATA = {
   },
 };
 
+export interface FullSizeRecipeCardProps {
+  data?: Recipe;
+  onPress?: (data: Recipe) => void;
+}
+
 export default function FullSizeRecipeCard({
-  data = DATA,
+  data,
   // imageSize = Dimensions.get("screen").width - 40,
   onPress,
   ...props
-}) {
+}: FullSizeRecipeCardProps) {
   const { getImg, imgUrl } = useFirebaseImage();
   const dimensions = useWindowDimensions()
   const imageSize = dimensions.width - 40
@@ -99,7 +105,7 @@ export default function FullSizeRecipeCard({
     data.details.photo && getImg(data.details.photo);
   }, []);
 
-  const formatTime = (time) => {
+  const formatTime = (time: HourMinuteTime) => {
     let _return = "";
     _return += time.hours ? time.hours + " hr " : "";
     _return += time.minutes ? time.minutes + " min" : "";
@@ -111,7 +117,7 @@ export default function FullSizeRecipeCard({
   };
 
   return (
-    <View style={styles.main}>
+    <View style={styles.main} >
       <Pressable style={styles.pressable} onPress={pressHandle}>
         {imgUrl ? (
           <Image

@@ -42,7 +42,7 @@ interface ProfilePageProps extends RootPageProps<"profile"> {
   myProfile: boolean;
 }
 
-// TODO : Finish converting this to use navigation and routes props
+// TODO : Finish converting this to use navigation and routes props (Actually, just redo this entire component)
 const ProfilePage = ({ data, myProfile, navigation, route }: ProfilePageProps) => {
 
   const onAddNewHandle = () => {
